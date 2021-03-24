@@ -87,7 +87,7 @@
 <meta property="og:description" content="Hooks是什么hooks 是 react16.8.0 推出的解决 函数组件 没有状态、没有生命周期的一套机制。使得 函数组件 能够替代 类组件 以及在某种程度上超越 类组件 Hooks 解决了如下问题 为函数组件提供了状态与生命周期 通过自定义hooks 扁平化的实现状态逻辑的复用。而 render props ，HOC 会带来层次嵌套的冗余，复用的逻辑越多，嵌套越深。 副作用的关注点分离, 使">
 <meta property="og:image" content="/React%20Hooks/image-20210325010514819.png">
 <meta property="article:published_time" content="2020-03-24T15:14:00.000Z">
-<meta property="article:modified_time" content="2021-03-24T17:10:45.940Z">
+<meta property="article:modified_time" content="2021-03-24T17:30:06.563Z">
 <meta property="article:author" content="Ted">
 <meta property="article:tag" content="React Hooks">
 <meta name="twitter:card" content="summary">
@@ -407,7 +407,12 @@
 </ul>
 <h4 id="useLayoutEffect"><a href="#useLayoutEffect" class="headerlink" title="useLayoutEffect"></a>useLayoutEffect</h4><ul>
 <li>与 <code>useEffect</code> 基本相同</li>
-<li>不同点：会阻塞DOM的渲染，<code>useEffect</code> 在全部渲染完毕后才会执行，<code>useLayoutEffect</code> 会在浏览器 <code>layout</code> 之后，<code>painting</code> 之前执行</li>
+<li>不同点：会阻塞DOM的渲染，<code>useEffect</code> 在全部渲染完毕后才会执行，<code>useLayoutEffect</code> 会在浏览器 <code>layout</code> 之后，<code>painting</code> 之前执行。<ul>
+<li>这一阶段虚拟DOM已经映射到了真实DOM，但由于 JS 线程和浏览器渲染线程是互斥的，页面还没有渲染。<code>componentDidMount</code>，<code>componentDidUpdate</code> 以及 <code>useLayoutEffect(create, deps)</code> 的 <code>create</code> 函数都是在这个阶段被<strong>同步执行</strong>。</li>
+<li>建议将修改 DOM 的操作里放到 <code>useLayoutEffect</code>, 仅用一次回流、重绘的代价，就把所有需要更新的 DOM 节点全部更新完成。</li>
+<li>真实 DOM 已更新，即使没有渲染，<code>useLayoutEffect(create, deps)</code> 的 <code>create</code> 函数能拿到新的<code>DOM</code></li>
+</ul>
+</li>
 <li>useLayoutEffect 相比 useEffect，通过同步执行状态更新可解决一些特性场景下的页面闪烁问题。</li>
 </ul>
 <img src="/React Hooks/image-20210325010514819.png" alt="image-20210325010514819" style="zoom:50%;">
