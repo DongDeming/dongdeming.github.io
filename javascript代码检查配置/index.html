@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="husky,eslint,prettier,lint-staged," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="概要说明 prettier 代码格式化，是的项目使用统一的格式风格，在代码格式化方面比 eslint 做的更好 eslint 能够发现一些 tsc 不会关心的错误，检查出一些潜在的代码问题。在和 Prettier 配合使用时，应该把 ESLint 中的代码格式相关的规则禁用掉。否则会有冲突 lint-staged 仅仅是文件过滤器, 将git暂存区(staged) 中的文件传递给配置的 linte">
+<meta property="og:type" content="article">
+<meta property="og:title" content="javascript代码检查配置">
+<meta property="og:url" content="github.tedming.com/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="概要说明 prettier 代码格式化，是的项目使用统一的格式风格，在代码格式化方面比 eslint 做的更好 eslint 能够发现一些 tsc 不会关心的错误，检查出一些潜在的代码问题。在和 Prettier 配合使用时，应该把 ESLint 中的代码格式相关的规则禁用掉。否则会有冲突 lint-staged 仅仅是文件过滤器, 将git暂存区(staged) 中的文件传递给配置的 linte">
+<meta property="og:image" content="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/image-20201209224239159.png">
+<meta property="og:image" content="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/image-20201209225353713.png">
+<meta property="article:published_time" content="2020-12-09T14:16:16.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.417Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="husky">
+<meta property="article:tag" content="eslint">
+<meta property="article:tag" content="prettier">
+<meta property="article:tag" content="lint-staged">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/image-20201209224239159.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/javascript代码检查配置/"/>
+
+
+
+
+
+  <title>javascript代码检查配置 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">javascript代码检查配置</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-12-09T22:16:16+08:00">
+                2020-12-09
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E6%9E%84%E5%BB%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">前端构建</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="概要说明"><a href="#概要说明" class="headerlink" title="概要说明"></a>概要说明</h3><ol>
+<li><code>prettier</code> 代码格式化，是的项目使用统一的格式风格，在代码格式化方面比 <code>eslint</code> 做的更好</li>
+<li><code>eslint</code> 能够发现一些 <code>tsc</code> 不会关心的错误，检查出一些潜在的代码问题。在和 Prettier 配合使用时，应该把 ESLint 中的代码格式相关的规则禁用掉。否则会有冲突</li>
+<li><code>lint-staged</code> 仅仅是文件过滤器, 将git暂存区(<code>staged</code>) 中的文件传递给配置的 <code>linter</code>或其他任务（进一步忽略任何文件都应该在任务本身中配置）。</li>
+<li><code>husky</code>: <code>git hooks</code> 监听，详见<a href="./git-hooks与husky.md">git hooks与husky</a> </li>
+</ol>
+<h3 id="在项目中配置代码检查与代码格式化"><a href="#在项目中配置代码检查与代码格式化" class="headerlink" title="在项目中配置代码检查与代码格式化"></a>在项目中配置代码检查与代码格式化</h3><ol>
+<li>初始化本地 <code>git</code> 仓库: <code>git init</code></li>
+<li>创建<code>package.json</code>文件：<code>yarn init -y</code></li>
+<li>安装相关包<code>yarn add husky prettier eslint lint-staged --dev</code></li>
+<li>配置 eslint: <code>npx eslint --init</code>，该命令有如下配置选择</li>
+</ol>
+<p><img src="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/image-20201209224239159.png" alt="image-20201209224239159"></p>
+<ol start="5">
+<li><p>补充安装 <code>typescript</code>：<code>yarn add typescript --dev</code></p>
+</li>
+<li><p>生成的 <code>eslintrc.json</code> 内容如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="attr">"env"</span>: &#123;</span><br><span class="line">        <span class="attr">"browser"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="attr">"es2021"</span>: <span class="literal">true</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"extends"</span>: [</span><br><span class="line">        <span class="string">"eslint:recommended"</span>,</span><br><span class="line">        <span class="string">"plugin:react/recommended"</span>,</span><br><span class="line">        <span class="string">"plugin:@typescript-eslint/recommended"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"parser"</span>: <span class="string">"@typescript-eslint/parser"</span>, <span class="comment">// 目前 TypeScript 的代码检查方案就是 `typescript-eslint`</span></span><br><span class="line">    <span class="attr">"parserOptions"</span>: &#123;</span><br><span class="line">        <span class="attr">"ecmaFeatures"</span>: &#123;</span><br><span class="line">            <span class="attr">"jsx"</span>: <span class="literal">true</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="attr">"ecmaVersion"</span>: <span class="number">12</span>,</span><br><span class="line">        <span class="attr">"sourceType"</span>: <span class="string">"module"</span></span><br><span class="line">    &#125;,</span><br><span class="line">    <span class="attr">"plugins"</span>: [</span><br><span class="line">        <span class="string">"react"</span>,</span><br><span class="line">        <span class="string">"@typescript-eslint"</span></span><br><span class="line">    ],</span><br><span class="line">    <span class="attr">"rules"</span>: &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>添加 <code>prettier</code> 常用设置</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// .prettierrc.js</span></span><br><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  <span class="comment">// max 120 characters per line</span></span><br><span class="line">  printWidth: <span class="number">120</span>,</span><br><span class="line">  <span class="comment">// use 2 spaces for indentation</span></span><br><span class="line">  tabWidth: <span class="number">2</span>,</span><br><span class="line">  <span class="comment">// use spaces instead of indentations</span></span><br><span class="line">  useTabs: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// semicolon at the end of the line</span></span><br><span class="line">  semi: <span class="literal">true</span>,</span><br><span class="line">  <span class="comment">// use single quotes</span></span><br><span class="line">  singleQuote: <span class="literal">true</span>,</span><br><span class="line">  <span class="comment">// object's key is quoted only when necessary</span></span><br><span class="line">  quoteProps: <span class="string">'as-needed'</span>,</span><br><span class="line">  <span class="comment">// use double quotes instead of single quotes in jsx</span></span><br><span class="line">  jsxSingleQuote: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// no comma at the end</span></span><br><span class="line">  trailingComma: <span class="string">'all'</span>,</span><br><span class="line">  <span class="comment">// spaces are required at the beginning and end of the braces</span></span><br><span class="line">  bracketSpacing: <span class="literal">true</span>,</span><br><span class="line">  <span class="comment">// end tag of jsx need to wrap</span></span><br><span class="line">  jsxBracketSameLine: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// brackets are required for arrow function parameter, even when there is only one parameter</span></span><br><span class="line">  arrowParens: <span class="string">'always'</span>,</span><br><span class="line">  <span class="comment">// format the entire contents of the file</span></span><br><span class="line">  rangeStart: <span class="number">0</span>,</span><br><span class="line">  rangeEnd: <span class="literal">Infinity</span>,</span><br><span class="line">  <span class="comment">// no need to write the beginning @prettier of the file</span></span><br><span class="line">  requirePragma: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// No need to automatically insert @prettier at the beginning of the file</span></span><br><span class="line">  insertPragma: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// use default break criteria</span></span><br><span class="line">  proseWrap: <span class="string">'preserve'</span>,</span><br><span class="line">  <span class="comment">// decide whether to break the html according to the display style</span></span><br><span class="line">  htmlWhitespaceSensitivity: <span class="string">'css'</span>,</span><br><span class="line">  <span class="comment">// vue files script and style tags indentation</span></span><br><span class="line">  vueIndentScriptAndStyle: <span class="literal">false</span>,</span><br><span class="line">  <span class="comment">// lf for newline</span></span><br><span class="line">  endOfLine: <span class="string">'lf'</span>,</span><br><span class="line">  <span class="comment">// formats quoted code embedded</span></span><br><span class="line">  embeddedLanguageFormatting: <span class="string">'auto'</span>,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ol>
+<ol start="7">
+<li><p>在 <code>package.json</code> 中配置 <code>lint-staged</code> 与 <code>husky</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"name"</span>: <span class="string">"test"</span>,</span><br><span class="line">  <span class="attr">"version"</span>: <span class="string">"1.0.0"</span>,</span><br><span class="line">  <span class="attr">"main"</span>: <span class="string">"index.js"</span>,</span><br><span class="line">  <span class="attr">"license"</span>: <span class="string">"MIT"</span>,</span><br><span class="line">  <span class="attr">"devDependencies"</span>: &#123;</span><br><span class="line">    <span class="attr">"@typescript-eslint/eslint-plugin"</span>: <span class="string">"^4.9.1"</span>,</span><br><span class="line">    <span class="attr">"@typescript-eslint/parser"</span>: <span class="string">"^4.9.1"</span>,</span><br><span class="line">    <span class="attr">"eslint"</span>: <span class="string">"^7.15.0"</span>,</span><br><span class="line">    <span class="attr">"eslint-plugin-react"</span>: <span class="string">"^7.21.5"</span>,</span><br><span class="line">    <span class="attr">"husky"</span>: <span class="string">"^4.3.5"</span>,</span><br><span class="line">    <span class="attr">"lint-staged"</span>: <span class="string">"^10.5.3"</span>,</span><br><span class="line">    <span class="attr">"prettier"</span>: <span class="string">"^2.2.1"</span>,</span><br><span class="line">    <span class="attr">"typescript"</span>: <span class="string">"^4.1.2"</span></span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"husky"</span>: &#123;</span><br><span class="line">    <span class="attr">"hooks"</span>: &#123;</span><br><span class="line">      <span class="attr">"pre-commit"</span>: <span class="string">"lint-staged"</span></span><br><span class="line">    &#125;</span><br><span class="line">  &#125;,</span><br><span class="line">  <span class="attr">"lint-staged"</span>: &#123;</span><br><span class="line">    <span class="attr">"src/**/*.&#123;ts, tsx&#125;"</span>: [</span><br><span class="line">      <span class="string">"eslint"</span>,</span><br><span class="line">      <span class="string">"prettier --write"</span></span><br><span class="line">    ]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>测试</p>
+<ol>
+<li><p>创建 <code>src/app.ts</code></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> myName: <span class="built_in">string</span>;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>提交代码时执行代码检查与代码格式化</p>
+</li>
+</ol>
+<p><img src="/javascript%E4%BB%A3%E7%A0%81%E6%A3%80%E6%9F%A5%E9%85%8D%E7%BD%AE/image-20201209225353713.png" alt="image-20201209225353713"></p>
+</li>
+</ol>
+<h3 id="使用-vscode-设置"><a href="#使用-vscode-设置" class="headerlink" title="使用 vscode 设置"></a>使用 vscode 设置</h3><h4 id="prettier-插件-Prettier-Code-formatter"><a href="#prettier-插件-Prettier-Code-formatter" class="headerlink" title="prettier 插件 Prettier - Code formatter"></a><code>prettier</code> 插件 <code>Prettier - Code formatter</code></h4><p>在eslint中用prettier就是个错误方式。官方推荐的方式：安装vscode插件，设置formatOnSave，保存的时候自动格式化。</p>
+<ol>
+<li><p>安装插件</p>
+</li>
+<li><p>安装本地 <code>prettier</code> <code>npm</code> 包</p>
+</li>
+<li><p><code>setting.json</code> 配置为默认格式化器以及开启保存时自动格式化</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"[typescript]"</span>: &#123;</span><br><span class="line">     <span class="attr">"editor.defaultFormatter"</span>: <span class="string">"esbenp.prettier-vscode"</span>,</span><br><span class="line">     <span class="attr">"editor.formatOnSave"</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置本地 <code>.prettier.js</code> 常用设置(<code>prettier</code> 配置文件生效顺序：<code>.prettier.js &gt; .editorconfig &gt; vscode setting</code>)</p>
+</li>
+</ol>
+<h4 id="eslint-插件"><a href="#eslint-插件" class="headerlink" title="eslint 插件"></a><code>eslint</code> 插件</h4><ol>
+<li><p>安装 <code>eslint</code> 插件</p>
+</li>
+<li><p>安装 <code>eslint</code> <code>npm</code> 包</p>
+</li>
+<li><p>生成本地 <code>eslintrc.json</code> </p>
+</li>
+<li><p><code>setting.json</code> 配置为默认格式化器以及开启保存时自动格式化</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="attr">"eslint.validate"</span>: [<span class="string">"javascript"</span>, <span class="string">"javascriptreact"</span>, <span class="string">"vue"</span>, <span class="string">"typescript"</span>, <span class="string">"typescriptreact"</span>],</span><br><span class="line">  <span class="attr">"editor.codeActionsOnSave"</span>: &#123;</span><br><span class="line">    <span class="attr">"source.fixAll.eslint"</span>: <span class="literal">true</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ol>
+<h3 id="eslint-主要配置说明"><a href="#eslint-主要配置说明" class="headerlink" title="eslint 主要配置说明"></a><code>eslint</code> 主要配置说明</h3><pre><code>- `env`: 指定脚本运行的环境，每种环境都有一组预定义的全局变量
+- globals：指定自定义的全局变量，避免规则抱错</code></pre><ul>
+<li>extends：对<code>eslint</code> 现有规则的一系列预设，支持规则的覆盖和聚合, 大多以 <code>eslint-config-</code>开头，写在<code>extends</code>中可以省略开头<pre><code>- eslint-config-airbnb: 该包提供了所有的 Airbnb 的 ESLint 配置，作为一种扩展的共享配置，你是可以修改覆盖掉某些不需要的配置的，该工具包包含了 react 的相关 Eslint 规则(eslint-plugin-react 与 eslint-plugin-jsx-a11y)，所以安装此依赖包的时候还需要安装刚才提及的两个插件</code></pre><ul>
+<li>eslint-config-airbnb-base: 与上一个包的区别是，此依赖包不包含 react 的规则，一般用于服务端检查。</li>
+<li>eslint-config-prettier: 将会禁用掉所有那些非必须或者和 prettier 冲突的规则。这让您可以使用您最喜欢的 shareable 配置，而不让它的风格选择在使用 Prettier 时碍事。请注意该配置只是将规则 off 掉,所以它只有在和别的配置一起使用的时候才有意义。</li>
+<li>eslint-config-standard: 是一个标准配置，旨在让所有开发者不需要维护 .eslintrc, .jshintrc, or .jscsrceslint-config-alloy: 腾讯ESLint配置</li>
+</ul>
+</li>
+<li>plugins：提供了除预设之外的自定义规则, 即创建不存在<code>eslint</code>现有的规则<pre><code>- eslint-plugin-babel: 和 babel-eslint 一起用的一款插件.babel-eslint 在将 eslint 应用于 Babel 方面做得很好，但是它不能更改内置规则来支持实验性特性。eslint-plugin-babel 重新实现了有问题的规则，因此就不会误报一些错误信息</code></pre><ul>
+<li>eslint-plugin-import: 该插件想要支持对 ES2015+ (ES6+) import/export 语法的校验, 并防止一些文件路径拼错或者是导入名称错误的情况</li>
+<li>eslint-plugin-promise：promise 规范写法检查插件，附带了一些校验规则。</li>
+<li>eslint-plugin-jsx-a11y: 该依赖包专注于检查 JSX 元素的可访问性。</li>
+<li>eslint-import-resolver-webpack: 可以借助 webpack 的配置来辅助 eslint 解析，最有用的就是 alias，从而避免 unresolved 的错误</li>
+<li>eslint-import-resolver-typescript：和 eslint-import-resolver-webpack 类似，主要是为了解决 alias 的问题</li>
+<li>eslint-plugin-react: React 专用的校验规则插件.</li>
+<li>eslint-plugin-jest: Jest 专用的 Eslint 规则校验插件.</li>
+<li>eslint-plugin-prettier: 该插件辅助 Eslint 可以平滑地与 Prettier 一起协作，并将 Prettier 的解析作为 Eslint 的一部分，在最后的输出可以给出修改意见。这样当 Prettier 格式化代码的时候，依然能够遵循我们的 Eslint 规则。如果你禁用掉了所有和代码格式化相关的 Eslint 规则的话，该插件可以更好得工作。所以你可以使用 eslint-config-prettier 禁用掉所有的格式化相关的规则(如果其他有效的 Eslint 规则与 prettier 在代码如何格式化的问题上不一致的时候，报错是在所难免的了)</li>
+<li>@typescript-eslint/eslint-plugin：Typescript 辅助 Eslint 的插件。</li>
+</ul>
+</li>
+<li>parser: 规则解析器<ul>
+<li><code>Espree</code> （默认）</li>
+<li><code>babel-eslint</code></li>
+<li><code>@typescript-eslint/parser</code></li>
+<li><code>esprima</code></li>
+</ul>
+</li>
+<li><code>rules</code>: 自定义规则，可以覆盖掉 <code>extends</code> <code>plugins</code> 的配置。<pre><code>- “off” 或 0 - 关闭规则</code></pre><ul>
+<li>“warn” 或 1 - 开启规则，使用警告级别的错误：warn (不会导致程序退出)</li>
+<li>“error” 或 2 - 开启规则，使用错误级别的错误：error (当被触发的时候，程序会退出)</li>
+</ul>
+</li>
+<li><code>parserOptions</code>: 指定你想要支持的 JavaScript 语言选项<pre><code>- `ecmaVersion`: 指定`ECMAScript`版本
+   - `sourceType` 设置为 “script” (默认) 或 “module”（如果你的代码是 `ECMAScript` 模块)</code></pre><ul>
+<li><code>ecmaFeatures</code> - 这是个对象，表示你想使用的额外的语言特性:<ul>
+<li><code>globalReturn</code> - 允许在全局作用域下使用 <code>return</code> 语句</li>
+<li><code>impliedStrict</code> - 启用全局 <code>strict mode</code> (如果 ecmaVersion 是 5 或更高)</li>
+<li><code>jsx</code> - 启用 <code>JSX</code></li>
+<li><code>experimentalObjectRestSpread</code> - 启用实验性的 object rest/spread properties 支持</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="eslint-常见项目配置-以腾讯AlloyTeam为例子"><a href="#eslint-常见项目配置-以腾讯AlloyTeam为例子" class="headerlink" title="eslint 常见项目配置(以腾讯AlloyTeam为例子)"></a><code>eslint</code> 常见项目配置(以腾讯AlloyTeam为例子)</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// vue</span><br><span class="line">npm install --save-dev eslint babel-eslint vue-eslint-parser eslint-plugin-vue eslint-config-alloy</span><br><span class="line"></span><br><span class="line">// typescript</span><br><span class="line">npm install --save-dev eslint typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-config-alloy</span><br><span class="line"></span><br><span class="line">// react</span><br><span class="line">npm install --save-dev eslint typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin eslint-plugin-react eslint-config-alloy</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>.exports = &#123;</span><br><span class="line">  extends: [</span><br><span class="line">    <span class="string">'alloy'</span>,</span><br><span class="line">    <span class="string">'alloy/vue'</span>,</span><br><span class="line">    <span class="string">'alloy/typescript'</span>,</span><br><span class="line">    <span class="string">'alloy/react'</span></span><br><span class="line">  ]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="eslint-常见行-disabled-注释"><a href="#eslint-常见行-disabled-注释" class="headerlink" title="eslint 常见行 disabled  注释"></a><code>eslint</code> 常见行 <code>disabled</code>  注释</h3><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// 块禁用</span></span><br><span class="line"><span class="comment">/* eslint-disable */</span> 或指定 <span class="comment">/* eslint-disable no-alert, no-console */</span></span><br><span class="line">alert(<span class="string">'foo'</span>);</span><br><span class="line"><span class="comment">/* eslint-enable */</span></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 指定禁用与指定启用</span></span><br><span class="line"></span><br><span class="line">alert(<span class="string">'foo'</span>);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'bar'</span>);</span><br><span class="line"><span class="comment">/* eslint-enable no-alert, no-console */</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">/// 行禁用</span></span><br><span class="line"><span class="comment">// eslint-disable-next-line 或 /* eslint-disable-next-line */ 或指定 // eslint-disable-next-line no-alert, quotes, semi</span></span><br><span class="line">alert(<span class="string">'foo'</span>); <span class="comment">// eslint-disable-line 或 /* eslint-disable-line */ 或指定 // eslint-disable-line no-alert, quotes, semi</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="主要社区流行方案"><a href="#主要社区流行方案" class="headerlink" title="主要社区流行方案"></a>主要社区流行方案</h3><ol>
+<li>目前有三个流行方案，分别是 <a href="https://github.com/airbnb/javascript" target="_blank" rel="noopener">Airbnb</a> 、<a href="https://standardjs.com/readme-zhcn.html" target="_blank" rel="noopener">Standard</a>、<a href="https://github.com/google/eslint-config-google" target="_blank" rel="noopener">Google</a>，严格程度对比是 Airbnb &gt; Google &gt; Standard，所以普遍使用Airbnb的多。</li>
+<li>腾讯设置  <a href="https://github.com/AlloyTeam/eslint-config-alloy#typescript" target="_blank" rel="noopener">AlloyTeam ESLint</a> <ol>
+<li>腾讯alloy团队维护的有别于 <code>airbnb</code> 的一套规则</li>
+<li>提供了 <a href="https://alloyteam.github.io/eslint-config-alloy/?language=en-US" target="_blank" rel="noopener">eslint-config-alloy在线规则查询测试</a></li>
+<li>让<code>prettier</code>处理与样式相关的规则</li>
+<li>做到了快速更新，遵循最新规则（ESLint的更新非常快，几乎每周都有一个新版本，有时会有新规则，有时不推荐使用现有规则，并且不时更新相关插件（<code>React / Vue / TypeScript</code>）。没有自动化工具，很难跟进。）</li>
+</ol>
+</li>
+</ol>
+<h3 id="如何选择合适的extends-和-plugins"><a href="#如何选择合适的extends-和-plugins" class="headerlink" title="如何选择合适的extends 和 plugins"></a>如何选择合适的<code>extends</code> 和 <code>plugins</code></h3><ol>
+<li>现有流行框架都提供了自身相关的 <code>extends</code> 和 <code>plugins</code> 如： <a href="https://eslint.vuejs.org/" target="_blank" rel="noopener">eslint-plugin-vue</a></li>
+<li>目前有三个流行方案，分别是 <a href="https://github.com/airbnb/javascript" target="_blank" rel="noopener">Airbnb</a> 、<a href="https://standardjs.com/readme-zhcn.html" target="_blank" rel="noopener">Standard</a>、<a href="https://github.com/google/eslint-config-google" target="_blank" rel="noopener">Google</a>，以及  <a href="https://github.com/AlloyTeam/eslint-config-alloy#typescript" target="_blank" rel="noopener">AlloyTeam ESLint</a> </li>
+<li>网站论坛查找方案</li>
+<li>关键词查找<code>npm</code>包： <code>eslint-config</code> 或 <code>eslint-plugin-</code> 或 <code>eslint-</code></li>
+</ol>
+<h3 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h3><p><a href="https://eslint.org/docs/user-guide/configuring" target="_blank" rel="noopener">eslint官网</a></p>
+<p><a href="https://cn.eslint.org/docs/user-guide/configuring" target="_blank" rel="noopener">eslint 中文</a></p>
+<p><a href="https://github.com/collections/clean-code-linters" target="_blank" rel="noopener">lint工具列表</a></p>
+<p><a href="https://www.cnblogs.com/jiaoshou/p/12218642.html" target="_blank" rel="noopener">VSCode常用插件之ESLint使用</a></p>
+<p><a href="http://lion1ou.win/2020/06/23/" target="_blank" rel="noopener">通过ESLint和Prettier统一团队代码规范</a></p>
+<p><a href="https://www.lagou.com/lgeduarticle/99765.html" target="_blank" rel="noopener">ESLint+Prettier代码规范实践</a></p>
+<p><a href="https://juejin.cn/post/6844903859488292871" target="_blank" rel="noopener">最全的Eslint配置模板，从此统一团队的编程习惯</a></p>
+<p><a href="https://jishuin.proginn.com/p/763bfbd2ae23" target="_blank" rel="noopener">可能是目前最详细从零开始配置 TypeScript 项目的教程</a></p>
+<p><a href="https://github.com/AlloyTeam/eslint-config-alloy#typescript" target="_blank" rel="noopener">腾讯AlloyTeam ESLint</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/husky/" rel="tag"># husky</a>
+          
+            <a href="/tags/eslint/" rel="tag"># eslint</a>
+          
+            <a href="/tags/prettier/" rel="tag"># prettier</a>
+          
+            <a href="/tags/lint-staged/" rel="tag"># lint-staged</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/typescript%E5%9F%BA%E7%A1%80%E4%BA%94%EF%BC%9A%E5%A3%B0%E6%98%8E%E6%96%87%E4%BB%B6/" rel="next" title="typescript基础五：声明文件">
+                <i class="fa fa-chevron-left"></i> typescript基础五：声明文件
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/monorepo%E4%BB%A5%E5%8F%8Alerna%E7%AE%80%E4%BB%8B/" rel="prev" title="monorepo以及lerna简介">
+                monorepo以及lerna简介 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#概要说明"><span class="nav-number">1.</span> <span class="nav-text">概要说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在项目中配置代码检查与代码格式化"><span class="nav-number">2.</span> <span class="nav-text">在项目中配置代码检查与代码格式化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用-vscode-设置"><span class="nav-number">3.</span> <span class="nav-text">使用 vscode 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#prettier-插件-Prettier-Code-formatter"><span class="nav-number">3.1.</span> <span class="nav-text">prettier 插件 Prettier - Code formatter</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#eslint-插件"><span class="nav-number">3.2.</span> <span class="nav-text">eslint 插件</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eslint-主要配置说明"><span class="nav-number">4.</span> <span class="nav-text">eslint 主要配置说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eslint-常见项目配置-以腾讯AlloyTeam为例子"><span class="nav-number">5.</span> <span class="nav-text">eslint 常见项目配置(以腾讯AlloyTeam为例子)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#eslint-常见行-disabled-注释"><span class="nav-number">6.</span> <span class="nav-text">eslint 常见行 disabled  注释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主要社区流行方案"><span class="nav-number">7.</span> <span class="nav-text">主要社区流行方案</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何选择合适的extends-和-plugins"><span class="nav-number">8.</span> <span class="nav-text">如何选择合适的extends 和 plugins</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考"><span class="nav-number">9.</span> <span class="nav-text">参考</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

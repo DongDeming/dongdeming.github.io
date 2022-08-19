@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="类型推导,泛型," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="范型，范型约束与范型推导泛型：是实现类型声明复用的一种方法，进而能够实现组件、函数的复用。泛型能够在使用的时候通过指定类型，或者通过实参推导出相应的类型。（类型模版） 泛型的声明泛型使用场景：函数、接口、类、类型别名声明(type) 123456789101112131415161718192021222324252627&#x2F;&#x2F; 函数function identity&lt;Type&gt;(arg">
+<meta property="og:type" content="article">
+<meta property="og:title" content="范型，范型约束与范型推导">
+<meta property="og:url" content="github.tedming.com/%E8%8C%83%E5%9E%8B%EF%BC%8C%E8%8C%83%E5%9E%8B%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%8C%83%E5%9E%8B%E6%8E%A8%E5%AF%BC/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="范型，范型约束与范型推导泛型：是实现类型声明复用的一种方法，进而能够实现组件、函数的复用。泛型能够在使用的时候通过指定类型，或者通过实参推导出相应的类型。（类型模版） 泛型的声明泛型使用场景：函数、接口、类、类型别名声明(type) 123456789101112131415161718192021222324252627&#x2F;&#x2F; 函数function identity&lt;Type&gt;(arg">
+<meta property="article:published_time" content="2022-01-25T05:51:43.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.400Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="类型推导">
+<meta property="article:tag" content="泛型">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/范型，范型约束与范型推导/"/>
+
+
+
+
+
+  <title>范型，范型约束与范型推导 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/%E8%8C%83%E5%9E%8B%EF%BC%8C%E8%8C%83%E5%9E%8B%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%8C%83%E5%9E%8B%E6%8E%A8%E5%AF%BC/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">范型，范型约束与范型推导</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-01-25T13:51:43+08:00">
+                2022-01-25
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Typescript/" itemprop="url" rel="index">
+                    <span itemprop="name">Typescript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/%E8%8C%83%E5%9E%8B%EF%BC%8C%E8%8C%83%E5%9E%8B%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%8C%83%E5%9E%8B%E6%8E%A8%E5%AF%BC/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/%E8%8C%83%E5%9E%8B%EF%BC%8C%E8%8C%83%E5%9E%8B%E7%BA%A6%E6%9D%9F%E4%B8%8E%E8%8C%83%E5%9E%8B%E6%8E%A8%E5%AF%BC/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="范型，范型约束与范型推导"><a href="#范型，范型约束与范型推导" class="headerlink" title="范型，范型约束与范型推导"></a>范型，范型约束与范型推导</h4><p>泛型：是实现类型声明复用的一种方法，进而能够实现组件、函数的复用。泛型能够在使用的时候通过指定类型，或者通过实参推导出相应的类型。（类型模版）</p>
+<h4 id="泛型的声明"><a href="#泛型的声明" class="headerlink" title="泛型的声明"></a>泛型的声明</h4><p>泛型使用场景：函数、接口、类、类型别名声明(<code>type</code>)</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 函数</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">identity</span>&lt;<span class="title">Type</span>&gt;(<span class="params">arg: Type</span>): <span class="title">Type</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> arg;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 接口声明的两种方式</span></span><br><span class="line"><span class="keyword">interface</span> GenericIdentityFn&lt;Type&gt; &#123;</span><br><span class="line">  (arg: Type): Type;</span><br><span class="line">&#125; <span class="comment">// 需要指定泛型类型，主要给变量提供结构限制的同时指定类型限制</span></span><br><span class="line"><span class="keyword">interface</span> GenericIdentityFn &#123;</span><br><span class="line">  &lt;Type&gt;(arg: Type): Type;</span><br><span class="line">&#125; <span class="comment">// 函数的接口声明，仅提供结构限制</span></span><br><span class="line"><span class="keyword">interface</span> GenericIdentityFn &#123;</span><br><span class="line">  fn: &lt;T&gt;<span class="function">(<span class="params">arg: T</span>) =&gt;</span> T;</span><br><span class="line">&#125; <span class="comment">// 函数属性的接口声明，仅提供结构限制</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 类的声明</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> GenericNumber&lt;NumType&gt; &#123;</span><br><span class="line">  zeroValue: NumType;</span><br><span class="line">  add: <span class="function">(<span class="params">x: NumType, y: NumType</span>) =&gt;</span> NumType;</span><br><span class="line">&#125; <span class="comment">// 需要指定泛型类型，主要给类提供结构限制的同时指定类型限制</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> GenericNumber &#123;</span><br><span class="line">  add!: &lt;T&gt;<span class="function">(<span class="params">a: T,b: T</span>) =&gt;</span> T;</span><br><span class="line">&#125; <span class="comment">// 仅给成员函数提供结构限制</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="类型操作符"><a href="#类型操作符" class="headerlink" title="类型操作符"></a>类型操作符</h4><ul>
+<li><code>keyof</code>：返回一个类对象类型的属性类型组合而成的联合类型<ul>
+<li>特殊：<code>[key: string]: number</code>的属性声明隐式包含了<code>number</code>类型</li>
+</ul>
+</li>
+<li><code>typeof</code>: 返回一个值的类型</li>
+<li><code>Type[&#39;name&#39;]</code>: 返回一个类声明的<code>name</code>属性的类型</li>
+<li><code>extends</code>: 条件限定<ul>
+<li><code>Dog extends Animal ? number : string;</code>  </li>
+</ul>
+</li>
+<li><code>in keyof</code> 属性循环重置</li>
+</ul>
+<h4 id="类型操作符在泛型中的使用"><a href="#类型操作符在泛型中的使用" class="headerlink" title="类型操作符在泛型中的使用"></a>类型操作符在泛型中的使用</h4><ul>
+<li><p><code>extends</code> 继承约束</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> Lengthwise &#123;</span><br><span class="line">  length: <span class="built_in">number</span>;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">loggingIdentity</span>&lt;<span class="title">Type</span> <span class="title">extends</span> <span class="title">Lengthwise</span>&gt;(<span class="params">arg: Type</span>): <span class="title">Type</span> </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(arg.length);</span><br><span class="line">  <span class="keyword">return</span> arg;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>extends</code> 条件约束</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> Flatten&lt;T&gt; = T <span class="keyword">extends</span> <span class="built_in">any</span>[] ? T[<span class="built_in">number</span>] : T; <span class="comment">// 条件判断, ***如果T是联合类型，将会遍历所有类型的条件判断，最后返回匹配的结果的联合类型***</span></span><br><span class="line"><span class="comment">// 条件判断推导 infer。目的在于从传入的泛型中，推导出其内部结构的类型，如参数，返回值等</span></span><br><span class="line"><span class="keyword">type</span> Flatten&lt;Type&gt; = Type <span class="keyword">extends</span> <span class="built_in">Array</span>&lt;infer Item&gt; ? Item : Type;</span><br><span class="line"><span class="keyword">type</span> GetReturnType&lt;Type&gt; = Type <span class="keyword">extends</span> (...args: never[]) =&gt; infer Return ? Return : never;</span><br></pre></td></tr></table></figure>
+
+
+
+</li>
+</ul>
+<ul>
+<li><p><code>keyof</code> 约束</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getProperty</span>&lt;<span class="title">Type</span>, <span class="title">Key</span> <span class="title">extends</span> <span class="title">keyof</span> <span class="title">Type</span>&gt;(<span class="params">obj: Type, key: Key</span>) </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> obj[key];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p><code>in keyof</code> 重置约束</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">type</span> OptionsFlags&lt;Type&gt; = &#123;</span><br><span class="line">  [Property <span class="keyword">in</span> keyof Type]: <span class="built_in">boolean</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 只读</span></span><br><span class="line"><span class="keyword">type</span> CreateMutable&lt;Type&gt; = &#123;</span><br><span class="line">  readonly [Property <span class="keyword">in</span> keyof Type]: Type[Property];</span><br><span class="line">&#125;;</span><br><span class="line"><span class="comment">// 可选</span></span><br><span class="line"><span class="keyword">type</span> Concrete&lt;Type&gt; = &#123;</span><br><span class="line">  [Property <span class="keyword">in</span> keyof Type]?: Type[Property];</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// as 限制</span></span><br><span class="line"><span class="keyword">type</span> RemoveKindField&lt;Type&gt; = &#123;</span><br><span class="line">    [Property <span class="keyword">in</span> keyof Type <span class="keyword">as</span> Exclude&lt;Property, <span class="string">"kind"</span>&gt;]: Type[Property]</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="泛型特殊使用场景"><a href="#泛型特殊使用场景" class="headerlink" title="泛型特殊使用场景"></a>泛型特殊使用场景</h4><ul>
+<li><p>构造器、实例限制</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">createInstance</span>&lt;<span class="title">A</span> <span class="title">extends</span> <span class="title">Animal</span>&gt;(<span class="params">c: <span class="keyword">new</span> () =&gt; A</span>): <span class="title">A</span> </span>&#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="keyword">new</span> c();</span><br><span class="line">&#125; <span class="comment">// new () =&gt; A 标识构造器；A标识实例类型</span></span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+<h4 id="工具泛型"><a href="#工具泛型" class="headerlink" title="工具泛型"></a>工具泛型</h4><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Construct a type with a set of properties K of type T</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Record&lt;K <span class="keyword">extends</span> keyof <span class="built_in">any</span>, T&gt; = &#123;</span><br><span class="line">    [P <span class="keyword">in</span> K]: T;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Exclude from T those types that are assignable to U</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Exclude&lt;T, U&gt; = T <span class="keyword">extends</span> U ? never : T;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Extract from T those types that are assignable to U</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Extract&lt;T, U&gt; = T <span class="keyword">extends</span> U ? T : never;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Construct a type with the properties of T except for those in type K.</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Omit&lt;T, K <span class="keyword">extends</span> keyof <span class="built_in">any</span>&gt; = Pick&lt;T, Exclude&lt;keyof T, K&gt;&gt;;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Exclude null and undefined from T</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> NonNullable&lt;T&gt; = T <span class="keyword">extends</span> <span class="literal">null</span> | <span class="literal">undefined</span> ? never : T;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Obtain the parameters of a function type in a tuple</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> Parameters&lt;T <span class="keyword">extends</span> (...args: <span class="built_in">any</span>) =&gt; <span class="built_in">any</span>&gt; = T <span class="keyword">extends</span> (...args: infer P) =&gt; <span class="built_in">any</span> ? P : never;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Obtain the parameters of a constructor function type in a tuple</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> ConstructorParameters&lt;T <span class="keyword">extends</span> <span class="keyword">abstract</span> <span class="keyword">new</span> (...args: <span class="built_in">any</span>) =&gt; <span class="built_in">any</span>&gt; = T <span class="keyword">extends</span> <span class="keyword">abstract</span> <span class="keyword">new</span> (...args: infer P) =&gt; <span class="built_in">any</span> ? P : never;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Obtain the return type of a function type</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> ReturnType&lt;T <span class="keyword">extends</span> (...args: <span class="built_in">any</span>) =&gt; <span class="built_in">any</span>&gt; = T <span class="keyword">extends</span> (...args: <span class="built_in">any</span>) =&gt; infer R ? R : <span class="built_in">any</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * Obtain the return type of a constructor function type</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">type</span> InstanceType&lt;T <span class="keyword">extends</span> <span class="keyword">abstract</span> <span class="keyword">new</span> (...args: <span class="built_in">any</span>) =&gt; <span class="built_in">any</span>&gt; = T <span class="keyword">extends</span> <span class="keyword">abstract</span> <span class="keyword">new</span> (...args: <span class="built_in">any</span>) =&gt; infer R ? R : <span class="built_in">any</span>;</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC/" rel="tag"># 类型推导</a>
+          
+            <a href="/tags/%E6%B3%9B%E5%9E%8B/" rel="tag"># 泛型</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC%E4%B8%8E%E6%96%AD%E8%A8%80/" rel="next" title="类型推导与断言">
+                <i class="fa fa-chevron-left"></i> 类型推导与断言
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/%E7%99%BD%E5%B8%BD%E5%AD%90%E8%AE%B2%E5%AE%89%E5%85%A8/" rel="prev" title="白帽子讲安全">
+                白帽子讲安全 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#范型，范型约束与范型推导"><span class="nav-number">1.</span> <span class="nav-text">范型，范型约束与范型推导</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型的声明"><span class="nav-number">2.</span> <span class="nav-text">泛型的声明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类型操作符"><span class="nav-number">3.</span> <span class="nav-text">类型操作符</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#类型操作符在泛型中的使用"><span class="nav-number">4.</span> <span class="nav-text">类型操作符在泛型中的使用</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#泛型特殊使用场景"><span class="nav-number">5.</span> <span class="nav-text">泛型特殊使用场景</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#工具泛型"><span class="nav-number">6.</span> <span class="nav-text">工具泛型</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

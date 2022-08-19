@@ -1,0 +1,832 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="typescript," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="范型即类型参数，目前范型能够出现在函数，接口，接口调用声明，类，类型别名声明这几个场景 范型约束 T extends Lengthwise 限制范型 T 的类型参数范围 c: new() &#x3D;&gt; T 或 c: {new(): T} 范型对类的约束 getProperty(obj: T, key: K) {return obj[key]} 范型 K 被 范型 T 所约束，即  K 只能为 T 属">
+<meta property="og:type" content="article">
+<meta property="og:title" content="typescript基础三：范型与类型推论">
+<meta property="og:url" content="github.tedming.com/typescript%E5%9F%BA%E7%A1%80%E4%B8%89%EF%BC%9A%E8%8C%83%E5%9E%8B%E4%B8%8E%E7%B1%BB%E5%9E%8B%E6%8E%A8%E8%AE%BA/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="范型即类型参数，目前范型能够出现在函数，接口，接口调用声明，类，类型别名声明这几个场景 范型约束 T extends Lengthwise 限制范型 T 的类型参数范围 c: new() &#x3D;&gt; T 或 c: {new(): T} 范型对类的约束 getProperty(obj: T, key: K) {return obj[key]} 范型 K 被 范型 T 所约束，即  K 只能为 T 属">
+<meta property="article:published_time" content="2020-11-11T14:33:01.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.398Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="typescript">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/typescript基础三：范型与类型推论/"/>
+
+
+
+
+
+  <title>typescript基础三：范型与类型推论 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/typescript%E5%9F%BA%E7%A1%80%E4%B8%89%EF%BC%9A%E8%8C%83%E5%9E%8B%E4%B8%8E%E7%B1%BB%E5%9E%8B%E6%8E%A8%E8%AE%BA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">typescript基础三：范型与类型推论</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-11-11T22:33:01+08:00">
+                2020-11-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/typescript%E5%9F%BA%E7%A1%80%E4%B8%89%EF%BC%9A%E8%8C%83%E5%9E%8B%E4%B8%8E%E7%B1%BB%E5%9E%8B%E6%8E%A8%E8%AE%BA/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/typescript%E5%9F%BA%E7%A1%80%E4%B8%89%EF%BC%9A%E8%8C%83%E5%9E%8B%E4%B8%8E%E7%B1%BB%E5%9E%8B%E6%8E%A8%E8%AE%BA/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="范型"><a href="#范型" class="headerlink" title="范型"></a>范型</h3><p>即类型参数，目前范型能够出现在函数，接口，接口调用声明，类，类型别名声明这几个场景</p>
+<h4 id="范型约束"><a href="#范型约束" class="headerlink" title="范型约束"></a>范型约束</h4><ol>
+<li><code>T extends Lengthwise</code> 限制范型 <code>T</code> 的类型参数范围</li>
+<li><code>c: new() =&gt; T</code> 或 <code>c: {new(): T}</code> 范型对类的约束</li>
+<li><code>getProperty(obj: T, key: K) {return obj[key]}</code> 范型 <code>K</code> 被 范型 <code>T</code> 所约束，即  <code>K</code> 只能为 <code>T</code> 属性的联合类型</li>
+<li>函数调用接口： 如果范型声明在接口上<code>interface F&lt;T&gt; {(n:T): void;}</code>，则给函数变量声明类型的同时必须确定范型的类型参数，如果范型声明在函数调用方法上<code>interface F {&lt;T&gt;(n:T): void;}</code>，则可以在函数变量调用的时候再确定范型的类型参数</li>
+</ol>
+<h3 id="类型推论"><a href="#类型推论" class="headerlink" title="类型推论"></a>类型推论</h3><p>在有些没有明确指出类型的地方，类型推论会帮助提供类型</p>
+<ol>
+<li><p>当传入的T是字面量的时候，类型推论是字面量类型。可以理解，因为传入的字面量此时是当类型在使用</p>
+</li>
+<li><p>最佳通用类型：<code>return [new A(), new B(), new C()]</code> 当从多个表达式中推论类型时，会考虑所有候选类型。寻找类型间的继承关系，以便选择最佳类型。如果这些候选类型中没有一个能兼容所有类型的类型，则推论的结果会使用联合类型</p>
+</li>
+<li><p>void 当函数没有任何返回值的时候，返回值就是void，当存在其他条件的返回值类型时，不会推论出返回值类型含 void</p>
+</li>
+<li><p>函数不会自动推论出返回值是never， 即使是抱错或死循环，需要显式指定。否则会认为能执行到结束</p>
+</li>
+<li><p>当变量可变时取字面量的类型，不可变时取<em>字面量类型</em></p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> x = <span class="number">3</span>; <span class="comment">//let x: number</span></span><br><span class="line"><span class="keyword">let</span> y = [<span class="number">1</span>, <span class="number">2</span>, <span class="literal">null</span>]; <span class="comment">// let y: (number | null)[]</span></span><br><span class="line"><span class="keyword">let</span> z = &#123;a: <span class="number">1</span>&#125;; <span class="comment">// let z: &#123;a: number&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> x1 = <span class="number">3</span>; <span class="comment">// const x1: 3 当值不能变化时，类型取联合类型</span></span><br><span class="line"><span class="keyword">const</span> y1 = [<span class="number">1</span>, <span class="number">2</span>, <span class="literal">null</span>]; <span class="comment">// const y1: (number | null)[] 因为是对象，属性是可变的</span></span><br><span class="line"><span class="keyword">const</span> z1 = &#123;a: <span class="number">1</span>&#125;; <span class="comment">// const z1: &#123;a: number&#125; 因为是对象，属性是可变的</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> Foo &#123;</span><br><span class="line">  readonly a: <span class="number">1</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">let</span> s: Foo[<span class="string">'a'</span>]; <span class="comment">// let s: 1 只读属性，不可变，类型取字面量的的联合类型，不扩展</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>类型限定</p>
+<ol>
+<li><code>pet is Fish</code> 类型保护: <code>function isFish(pet: Fish | Bird): pet is Fish {return (&lt;Fish&gt;pet).swim !== undefined; }</code>  <code>pet</code> 必须是函数参数</li>
+<li><code>typeof</code>类型保护：<code>typeof v === &quot;typename&quot; 或 typeof v !== &quot;typename&quot;</code></li>
+<li><code>instanceof</code>类型保护: <code>if (padder instanceof SpaceRepeatingPadder)</code></li>
+<li>条件语句的类型保护： <code>if (person === null)  | if (person === undefined)  |  if (&#39;class&#39; in person)</code> 并对其他条件排除该可能性</li>
+<li>通过检查 <em>可辨识的特征｜标签</em>：即每个接口都有一个同名的，单例类型的属性（单例类型：指枚举成员的类型和数字/字符串字面量类型）</li>
+<li><code>for (let id in second); // 类型限定 id 是 second 的属性</code></li>
+<li>使用断言语法，如<code>!后缀</code>： <code>identifier!</code> 指明 <code>identifier</code> 不会包含 <code>nul</code>l 和 <code>undefined</code></li>
+</ol>
+</li>
+</ol>
+<h3 id="类型兼容"><a href="#类型兼容" class="headerlink" title="类型兼容"></a>类型兼容</h3><p>基本规则是，如果类型y 想要赋给类型x, 那么y至少具有与x相同的属性。即x兼容y</p>
+<ol>
+<li><em>函数的双向协变：[目标函数] = [源函数]</em> : <ul>
+<li><em>目标函数</em> 的参数必须兼容 <em>源函数</em> 的参数。 即<em>源函数</em> 的参数可以少传或不传</li>
+<li><em>源函数</em> 的返回值必须兼容 <em>目标函数</em> 的返回值</li>
+</ul>
+</li>
+<li>类类型比较兼容性的时候，只比较其实例成员。如果存在私有成员和保护成员会影响兼容性（同源）</li>
+<li>范型：类型参数只影响使用其做为类型一部分的结果类型。如果结果类型的结构是兼容的，则源与目标是兼容的，没指定泛型的类型参数时，会把所有类型参数当成any去创建结果类型，然后用结果类型进行比较</li>
+</ol>
+<h3 id="类型别名"><a href="#类型别名" class="headerlink" title="类型别名"></a>类型别名</h3><p>类型别名 <code>type A = string | number;</code> 起别名不会新建一个类型，只是创建了一个新名字来引用那个类型</p>
+<ol>
+<li>支持范型：<code>type Container&lt;T&gt; = { value: T };// 右侧不是匿名接口</code></li>
+<li>如果你无法通过接口来描述一个类型并且需要使用联合类型或元组类型，这时通常会使用类型别名。</li>
+</ol>
+<h3 id="范型索引"><a href="#范型索引" class="headerlink" title="范型索引"></a>范型索引</h3><ol>
+<li><p><code>keyof T</code>  索引类型查询操作符:  对于任何类型  <code>T</code> ， <code>keyof T</code>的结果为 <code>T</code>上已知的 <em>public属性名</em> 的联合类型。</p>
+</li>
+<li><p><code>T[K]</code> 索引访问操作符:   实例属性 <code>person[&#39;name&#39;]</code> 的类型为 <code>Person[&#39;name&#39;]</code></p>
+</li>
+<li><p>{ [K in Keys]: boolean }; 内部使用了 for .. in</p>
+<ol>
+<li>类型变量 K，它会依次绑定到每个属性。</li>
+<li>字符串字面量联合的 Keys，它包含了要迭代的属性名的联合类型。</li>
+</ol>
+</li>
+<li><p>K extends string 和 K extends keyof T 有什么区别</p>
+<ol>
+<li><code>K extends string</code> 能接受字符串字面量类型的联合类型</li>
+<li>同理 <code>K exntends number</code> 能接受数字字面量类型的联合类型</li>
+</ol>
+</li>
+</ol>
+<h3 id="其它："><a href="#其它：" class="headerlink" title="其它："></a>其它：</h3><p>函数重载：当多个同名函数的形式参数的数据类型不同或数量不同时，就构成了函数的重载</p>
+<pre><code>- 字符串字面量类型还可以用于区分函数重载 `declare function createElement(tagName: &quot;img&quot;): HTMLImageElement;` </code></pre><p>never 对<code>switch</code>完整性进行检查提示: <code>default: return assertNever(s);</code> // s 不能赋值给never，这时候会报错提示</p>
+<p>this 的多态</p>
+<ul>
+<li><p>多态是同一个行为具有多个不同表现形式或形态的能力。</p>
+<ul>
+<li><code>A</code> 类声明了<code>public add(operand: number): this{}</code>， <code>B extends A</code> 也同样继承，并且运行时 <code>this</code> 是 <code>B</code> 的实例</li>
+</ul>
+</li>
+</ul>
+<p>TypeScript 2.8在lib.d.ts里增加了一些预定义的有条件类型：</p>
+<ul>
+<li>Exclude&lt;T, U&gt; – 从T中剔除可以赋值给U的类型。</li>
+<li>Extract&lt;T, U&gt; – 提取T中可以赋值给U的类型。</li>
+<li>NonNullable<T> – 从T中剔除null和undefined。</T></li>
+<li>ReturnType<T> – 获取函数返回值类型。</T></li>
+<li>InstanceType<T> – 获取构造函数类型的实例类型。</T></li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/typescript/" rel="tag"># typescript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/typescript%E5%9F%BA%E7%A1%80%E4%BA%8C%EF%BC%9A%E6%8E%A5%E5%8F%A3/" rel="next" title="typescript基础二：接口">
+                <i class="fa fa-chevron-left"></i> typescript基础二：接口
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/typescript%E5%9F%BA%E7%A1%80%E5%9B%9B:%20%E6%A8%A1%E5%9D%97%E4%B8%8E%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4/" rel="prev" title="typescript基础四：模块与命名空间">
+                typescript基础四：模块与命名空间 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#范型"><span class="nav-number">1.</span> <span class="nav-text">范型</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#范型约束"><span class="nav-number">1.1.</span> <span class="nav-text">范型约束</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型推论"><span class="nav-number">2.</span> <span class="nav-text">类型推论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型兼容"><span class="nav-number">3.</span> <span class="nav-text">类型兼容</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型别名"><span class="nav-number">4.</span> <span class="nav-text">类型别名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#范型索引"><span class="nav-number">5.</span> <span class="nav-text">范型索引</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#其它："><span class="nav-number">6.</span> <span class="nav-text">其它：</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

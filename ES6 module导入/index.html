@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ES6," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="ES6 module导入 commonjs ESM 的区别 commonjs模块导出是值拷贝，如果一个原生值作为导出项，当其发生变化时，外部无法通过该导出项获得变化之后的值（值拷贝）。但是可以通过函数的形式获取（闭包）。 ES模块导出是拷贝引用地址，如果一个原生值作为导出项，当其发生变化时，外部能够获得最新的值。变量是只读的，对它进行重新赋值会报错。  循环依赖（当项目复杂的时候难以避免，模块加载">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ES6 module导入">
+<meta property="og:url" content="github.tedming.com/ES6%20module%E5%AF%BC%E5%85%A5/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="ES6 module导入 commonjs ESM 的区别 commonjs模块导出是值拷贝，如果一个原生值作为导出项，当其发生变化时，外部无法通过该导出项获得变化之后的值（值拷贝）。但是可以通过函数的形式获取（闭包）。 ES模块导出是拷贝引用地址，如果一个原生值作为导出项，当其发生变化时，外部能够获得最新的值。变量是只读的，对它进行重新赋值会报错。  循环依赖（当项目复杂的时候难以避免，模块加载">
+<meta property="article:published_time" content="2021-04-14T06:34:30.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.401Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="ES6">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/ES6 module导入/"/>
+
+
+
+
+
+  <title>ES6 module导入 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/ES6%20module%E5%AF%BC%E5%85%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">ES6 module导入</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-14T14:34:30+08:00">
+                2021-04-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Javascript/" itemprop="url" rel="index">
+                    <span itemprop="name">Javascript</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/ES6%20module%E5%AF%BC%E5%85%A5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/ES6%20module%E5%AF%BC%E5%85%A5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>ES6 module导入</p>
+<h3 id="commonjs-ESM-的区别"><a href="#commonjs-ESM-的区别" class="headerlink" title="commonjs ESM 的区别"></a><code>commonjs</code> <code>ESM</code> 的区别</h3><ul>
+<li><code>commonjs</code>模块导出是值拷贝，如果一个原生值作为导出项，当其发生变化时，外部无法通过该导出项获得变化之后的值（值拷贝）。但是可以通过函数的形式获取（闭包）。</li>
+<li><code>ES</code>模块导出是拷贝引用地址，如果一个原生值作为导出项，当其发生变化时，外部能够获得最新的值。变量是只读的，对它进行重新赋值会报错。</li>
+</ul>
+<h3 id="循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）"><a href="#循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）" class="headerlink" title="循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）"></a>循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）</h3><ul>
+<li>CommonJS 模块的重要特性是加载时执行，即脚本代码在require的时候，就会全部执行。一旦出现某个模块被”循环加载”，就只输出已经执行的部分（已经赋值的<code>exports.a = b</code>），还未执行的部分不会输出。</li>
+</ul>
+<ul>
+<li>ES6模块先定义了导出接口，<ul>
+<li><code>a.js</code>中先引用<code>b.js</code> ,然后导出变量<code>c</code>, <code>b.js</code>中使用了<code>c</code></li>
+<li>代码执行之后，<code>a.js</code>执行碰到引用<code>b.js</code>语句进入<code>b.js</code>.</li>
+<li><code>b.js</code> 调用变量<code>a.js</code>中的<code>c</code></li>
+<li>但此时<code>c</code>变量在<code>a.js</code>中还未执行声明语句，会报错（ <code>let, const</code>不会声明提升, <code>c</code>如果是函数的话会声明提升，此时不会报错，但<code>b.js</code>中拿到的<code>c</code>值是<code>undefined</code>，因为还未赋值）</li>
+</ul>
+</li>
+</ul>
+<h3 id="package-json入口定义与文件加载"><a href="#package-json入口定义与文件加载" class="headerlink" title="package.json入口定义与文件加载"></a><code>package.json</code>入口定义与文件加载</h3><p><code>package.json</code> 之中定义了好些个与文件入口相关的参数，这不禁让人疑惑，每个入口的命中条件是什么？</p>
+<p>查找相关资料之后，我们会发现命中哪个入口的并不由<code>package.json</code>决定，而是由使用方决定的。</p>
+<h3 id="cjs-amp-mjs"><a href="#cjs-amp-mjs" class="headerlink" title="cjs&amp; mjs"></a><code>cjs</code>&amp; <code>mjs</code></h3><ul>
+<li><code>cjs</code>中引用<code>mjs</code>: <code>mjs</code> 需要导出 <code>export default</code>, <code>cjs</code> 使用<code>import()</code>动态加载<code>mjs</code></li>
+<li><code>mjs</code>中引用<code>cjs</code>: 直接<code>import</code>即可，但是<code>module.exports</code> 会被整体导入，无法<code>tree shaking</code></li>
+<li>注意，ES6 模块与 CommonJS 模块尽量不要混用。(但是第三方构建工具能够抹平差异，如使用webpack后则不需要关注这个问题)。</li>
+</ul>
+<h3 id="nodejs"><a href="#nodejs" class="headerlink" title="nodejs"></a>nodejs</h3><ul>
+<li>选取的入口则只认<code>main</code>；</li>
+<li>同一个目录下同时存在<code>index.cjs</code> <code>index.mjs</code><ul>
+<li>可以通过配置：<code>--es-module-specifier-resolution=node</code>省略后缀</li>
+<li>但是两者间谁更优先则没定论，貌似带上后缀会更合适</li>
+</ul>
+</li>
+<li>会根据文件后缀<code>.mjs</code> <code>.cjs</code> 或 <code>package.json .type</code>属性决定<code>.js</code>文件是<code>cjs</code>还是<code>esm</code>；</li>
+</ul>
+<h3 id="webpack-等构建工具"><a href="#webpack-等构建工具" class="headerlink" title="webpack 等构建工具"></a>webpack 等构建工具</h3><ul>
+<li>根据 <code>resolve.mainFields</code>配置决定命中入口的顺序(默认配置有由<code>.target</code>决定)</li>
+<li>查找文件类型顺序则由<code>resolve. extension</code> 决定。</li>
+<li>同样会根据文件后缀<code>.mjs</code> <code>.cjs</code> 或 <code>package.json .type</code>属性决定文件是cjs还是esm文件。</li>
+</ul>
+<h3 id="package-json-入口定义"><a href="#package-json-入口定义" class="headerlink" title="package.json 入口定义"></a><code>package.json</code> 入口定义</h3><ul>
+<li><code>main</code> : 定义了 <code>npm</code> 包的入口文件，<code>browser</code> 环境和 <code>node</code> 环境均可使用</li>
+</ul>
+<ul>
+<li><code>module</code> : 定义 <code>npm</code> 包的 ESM 规范的入口文件，<code>browser</code> 环境和 <code>node</code> 环境均可使用</li>
+<li><code>browser</code> : 定义 <code>npm</code> 包在 browser 环境下的入口文件</li>
+<li><code>main</code>是<code>nodejs</code> 使用的，而其它的<code>exports</code> <code>browser</code>, <code>module</code>, <code>main</code> ，则是提供给构建工具使用，优先级也根据构建工具自身配置决定。</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ES6/" rel="tag"># ES6</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/React%E6%8B%BE%E9%81%97/" rel="next" title="React拾遗">
+                <i class="fa fa-chevron-left"></i> React拾遗
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/HTML%E6%B8%B2%E6%9F%93%E6%B5%81%E7%A8%8B/" rel="prev" title="HTML渲染流程">
+                HTML渲染流程 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#commonjs-ESM-的区别"><span class="nav-number">1.</span> <span class="nav-text">commonjs ESM 的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）"><span class="nav-number">2.</span> <span class="nav-text">循环依赖（当项目复杂的时候难以避免，模块加载机制必须考虑“循环加载”的情况。）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#package-json入口定义与文件加载"><span class="nav-number">3.</span> <span class="nav-text">package.json入口定义与文件加载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#cjs-amp-mjs"><span class="nav-number">4.</span> <span class="nav-text">cjs&amp; mjs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#nodejs"><span class="nav-number">5.</span> <span class="nav-text">nodejs</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#webpack-等构建工具"><span class="nav-number">6.</span> <span class="nav-text">webpack 等构建工具</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#package-json-入口定义"><span class="nav-number">7.</span> <span class="nav-text">package.json 入口定义</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

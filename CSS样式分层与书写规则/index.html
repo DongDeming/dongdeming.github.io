@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="CSS," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="考虑设计性，多人协作实践推演 关键目标：性能，复用，可扩展，维护性， Atomic CSS：原子化 CSS 结构编写基础的功能单一的 CSS class123.mt-10 &amp;#123;margin-top: 10px;&amp;#125;.w-100 &amp;#123; width: 100px;&amp;#125;.h-15 &amp;#123; height: 15px;&amp;#125;     优点 缺点    复用性是最高">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSS样式分层与书写规则">
+<meta property="og:url" content="github.tedming.com/CSS%E6%A0%B7%E5%BC%8F%E5%88%86%E5%B1%82%E4%B8%8E%E4%B9%A6%E5%86%99%E8%A7%84%E5%88%99/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="考虑设计性，多人协作实践推演 关键目标：性能，复用，可扩展，维护性， Atomic CSS：原子化 CSS 结构编写基础的功能单一的 CSS class123.mt-10 &amp;#123;margin-top: 10px;&amp;#125;.w-100 &amp;#123; width: 100px;&amp;#125;.h-15 &amp;#123; height: 15px;&amp;#125;     优点 缺点    复用性是最高">
+<meta property="article:published_time" content="2021-03-10T16:39:06.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.401Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="CSS">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/CSS样式分层与书写规则/"/>
+
+
+
+
+
+  <title>CSS样式分层与书写规则 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/CSS%E6%A0%B7%E5%BC%8F%E5%88%86%E5%B1%82%E4%B8%8E%E4%B9%A6%E5%86%99%E8%A7%84%E5%88%99/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">CSS样式分层与书写规则</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-03-11T00:39:06+08:00">
+                2021-03-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CSS/" itemprop="url" rel="index">
+                    <span itemprop="name">CSS</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/CSS%E6%A0%B7%E5%BC%8F%E5%88%86%E5%B1%82%E4%B8%8E%E4%B9%A6%E5%86%99%E8%A7%84%E5%88%99/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/CSS%E6%A0%B7%E5%BC%8F%E5%88%86%E5%B1%82%E4%B8%8E%E4%B9%A6%E5%86%99%E8%A7%84%E5%88%99/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>考虑设计性，多人协作实践推演</p>
+<p>关键目标：性能，复用，可扩展，维护性，</p>
+<h3 id="Atomic-CSS：原子化-CSS-结构"><a href="#Atomic-CSS：原子化-CSS-结构" class="headerlink" title="Atomic CSS：原子化 CSS 结构"></a><code>Atomic CSS</code>：原子化 CSS 结构</h3><h4 id="编写基础的功能单一的-CSS-class"><a href="#编写基础的功能单一的-CSS-class" class="headerlink" title="编写基础的功能单一的 CSS class"></a>编写基础的功能单一的 <code>CSS class</code></h4><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.mt-10</span> &#123;<span class="attribute">margin-top</span>: <span class="number">10px</span>;&#125;</span><br><span class="line"><span class="selector-class">.w-100</span> &#123; <span class="attribute">width</span>: <span class="number">100px</span>;&#125;</span><br><span class="line"><span class="selector-class">.h-15</span> &#123; <span class="attribute">height</span>: <span class="number">15px</span>;&#125;</span><br></pre></td></tr></table></figure>
+
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>复用性是最高的，代码也最少</td>
+<td>html膨胀，每个元素就需要一堆的 Class</td>
+</tr>
+<tr>
+<td></td>
+<td>要记一堆<code>class</code>命名规则</td>
+</tr>
+</tbody></table>
+<h4 id="场景使用参考："><a href="#场景使用参考：" class="headerlink" title="场景使用参考："></a>场景使用参考：</h4><ul>
+<li>对于现代的CSS预处理器，可以声明一系列单一样式的字体，间距，颜色变量</li>
+<li>多人协作<ul>
+<li>创建：需要注意命名规则的统一，以及命名的先后顺序，防止重复声明即可。总体而言相对简单</li>
+<li>使用：需要记一堆的命名规则</li>
+</ul>
+</li>
+</ul>
+<h3 id="BEM：最流行的命名规则之一"><a href="#BEM：最流行的命名规则之一" class="headerlink" title="BEM：最流行的命名规则之一"></a><code>BEM</code>：最流行的命名规则之一</h3><table>
+<thead>
+<tr>
+<th>关键词</th>
+<th>解释</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B(Block)</td>
+<td>独立的块（组件、对象），该块可以出现在页面任何位置而不影响内部样式</td>
+</tr>
+<tr>
+<td>E(Element)</td>
+<td>块内部的元素、子模块</td>
+</tr>
+<tr>
+<td>M(modifier)</td>
+<td>修饰/变化：属性、大小、状态等</td>
+</tr>
+</tbody></table>
+<h4 id="命名规则"><a href="#命名规则" class="headerlink" title="命名规则"></a>命名规则</h4><ul>
+<li><code>block[__element]--modifier</code> 或者 <code>block[__element]_modifier</code>（倾向于第一种写法）</li>
+<li>单词之间使用（-）分隔（<code>block-name__element-name--modifier-name</code>）</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>优点</th>
+<th>缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>block</code>前缀使得命名更加安全，防止样式污染</td>
+<td><code>modifier</code> 容易发生改变/废弃，造成冗余与维护成本</td>
+</tr>
+<tr>
+<td>命名方式简单，易于与html内容一一对应</td>
+<td>不宜嵌套过多层（不超过4层），否则命名会很长与混乱。组件化可以很好的防止这个问题</td>
+</tr>
+<tr>
+<td></td>
+<td><code>class</code>命名注定了较长</td>
+</tr>
+</tbody></table>
+<h4 id="场景使用参考：-1"><a href="#场景使用参考：-1" class="headerlink" title="场景使用参考："></a>场景使用参考：</h4><ul>
+<li>与组件模块化结合，block即模块</li>
+<li>模块内样式不会造成污染，方便多人维护</li>
+<li>需要注意modifier的变更维护，废弃的样式要及时删除</li>
+</ul>
+<h3 id="SUITCSS：更加符合组件的命名方式"><a href="#SUITCSS：更加符合组件的命名方式" class="headerlink" title="SUITCSS：更加符合组件的命名方式"></a><code>SUITCSS</code>：更加符合组件的命名方式</h3><p>能够有效的防止类名重复，以及样式冲突。提供了完整的基础类，以及测试套件用来检测你的 CSS 类名是否符合规范，具体查看<a href="https://github.com/suitcss/suit" target="_blank" rel="noopener">官方文档</a></p>
+<h4 id="命名规则-1"><a href="#命名规则-1" class="headerlink" title="命名规则"></a>命名规则</h4><ul>
+<li>组件：[&lt;命名空间&gt;-]&lt;组件名&gt;[-后代名][–修饰符]</li>
+<li>工具类：u-[sm-|md-|lg-]&lt;工具类名&gt;</li>
+<li>命名使用驼峰的方式命名，在 BEM 的基础上进行了改进，去除了双下划线，更加精简</li>
+</ul>
+<h4 id="场景使用参考：-2"><a href="#场景使用参考：-2" class="headerlink" title="场景使用参考："></a>场景使用参考：</h4><ul>
+<li>命名空间、组件名能够提供良好的作用域，防止样式冲突，适用于组件样式的编写</li>
+</ul>
+<h3 id="OOCSS：页面元素即对象，"><a href="#OOCSS：页面元素即对象，" class="headerlink" title="OOCSS：页面元素即对象，"></a>OOCSS：页面元素即对象，</h3><p>抽象相同的页面结构，将其视为对象，并为其编写对应的样式</p>
+<h4 id="规则"><a href="#规则" class="headerlink" title="规则"></a>规则</h4><ul>
+<li>为对象创建一个组件库样式集合</li>
+<li>容器与内容的样式要分离（避免样式依赖位置）</li>
+<li>分离的结构与皮肤（实现样式重用）</li>
+<li>使用类名为扩展基本对象</li>
+<li>先对小的对象构建CSS，然后汇聚成复杂对象的基础</li>
+</ul>
+<h4 id="场景使用参考"><a href="#场景使用参考" class="headerlink" title="场景使用参考"></a>场景使用参考</h4><ul>
+<li>Grid行对象样式集合</li>
+<li>适合于大型的项目</li>
+<li>布局对象组：多个简单对象形成的对象组， 媒体对象：单个对象， Grid行对象</li>
+<li>可以与props属性相结合，根据props通过扩展类动态改变基础样式。</li>
+</ul>
+<h3 id="AMCSS（Attribute-Modules-for-CSS）"><a href="#AMCSS（Attribute-Modules-for-CSS）" class="headerlink" title="AMCSS（Attribute Modules for CSS）"></a>AMCSS（Attribute Modules for CSS）</h3><h4 id="规则-1"><a href="#规则-1" class="headerlink" title="规则"></a>规则</h4><ul>
+<li>使用属性作为样式的分隔样式的作用域</li>
+</ul>
+<h4 id="场景使用参考-1"><a href="#场景使用参考-1" class="headerlink" title="场景使用参考"></a>场景使用参考</h4><ul>
+<li>需要在DOM元素上存储数据，例如放在data-store属性中，此时，配合AMCSS，我们可以非常高效进行不同数据不同样式的控制。</li>
+<li>无障碍访问中的aria-*本质上也都是通过属性控制</li>
+<li>现代Web Components的UI控制也是基于HTML属性</li>
+<li>Vue使用 AMCSS 来实现不同组件之间css作用域的控制</li>
+</ul>
+<h4 id="SMACSS（Scalable（可扩展）-和-Modular-Architecture（模块化）-的-CSS）"><a href="#SMACSS（Scalable（可扩展）-和-Modular-Architecture（模块化）-的-CSS）" class="headerlink" title="SMACSS（Scalable（可扩展） 和 Modular Architecture（模块化） 的 CSS）"></a>SMACSS（Scalable（可扩展） 和 Modular Architecture（模块化） 的 CSS）</h4><h4 id="每个-SMACSS-项目结构分为-5-种规则："><a href="#每个-SMACSS-项目结构分为-5-种规则：" class="headerlink" title="每个 SMACSS 项目结构分为 5 种规则："></a>每个 SMACSS 项目结构分为 5 种规则：</h4><ul>
+<li>Base（基础）- DOM元素全局的默认样式，默认值。在不同浏览器上保持一致。默认的大小、边距、颜色、边框和其他默认值。你的排版和表单元素应该在每个页面上具有统一的样式，给人感觉它们是统一的设计和主题。</li>
+<li>Layout（布局）</li>
+<li>Modules（模块）</li>
+<li>State（状态）</li>
+<li>Theme（主题）</li>
+</ul>
+<h3 id="ITCSS"><a href="#ITCSS" class="headerlink" title="ITCSS"></a>ITCSS</h3><p>呈现了一个倒三角的形状，从上到下，特异性逐渐增加。这种工作方式不是那么专注于特异性，这让开发者多次使用一个页面的类变得更加容易。</p>
+<h4 id="规则-2"><a href="#规则-2" class="headerlink" title="规则"></a>规则</h4><ul>
+<li><p>这个三角形的每一个部分都可以被视为一个单独的文件，或是一个文件群，虽然你在写代码的时候不用遵循这个顺序。你也可以将每一个部分想象成拆分和构建可重复利用CSS代码的方法。</p>
+</li>
+<li><p>我们来从上至下看看这个倒三角的每一个组成部分。</p>
+<ul>
+<li>设置 –预处理程序变量和方法（无实际CSS输出）</li>
+<li>工具 – Mixins和函数（无实际CSS输出）</li>
+<li>常规 – CSS重置</li>
+<li>元素 –没有类的单个HTML元素选择器</li>
+<li>对象 -通常遵循OOCSS方法的页面结构类</li>
+<li>组件 –用于设置任何页面元素和所有页面元素样式的美学类（通常与对象类的结构结合使用）</li>
+<li><strong>Trumps</strong> –最重要的样式，用于覆盖三角形中的任何其他内容</li>
+</ul>
+</li>
+<li><p>倒三角中的每一个组成部分都可以进行调整，从而满足你的需要。所以，如果你不使用CSS预处理程序，那么你就不需要设置和工具层。你也完全可以根据自己的需求来改变每一个部分。</p>
+</li>
+</ul>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CSS/" rel="tag"># CSS</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/ES6%E4%BB%A3%E7%A0%81%E6%8B%BE%E9%81%97/" rel="next" title="ES6代码拾遗">
+                <i class="fa fa-chevron-left"></i> ES6代码拾遗
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="prev" title="设计模式">
+                设计模式 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Atomic-CSS：原子化-CSS-结构"><span class="nav-number">1.</span> <span class="nav-text">Atomic CSS：原子化 CSS 结构</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#编写基础的功能单一的-CSS-class"><span class="nav-number">1.1.</span> <span class="nav-text">编写基础的功能单一的 CSS class</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景使用参考："><span class="nav-number">1.2.</span> <span class="nav-text">场景使用参考：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#BEM：最流行的命名规则之一"><span class="nav-number">2.</span> <span class="nav-text">BEM：最流行的命名规则之一</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#命名规则"><span class="nav-number">2.1.</span> <span class="nav-text">命名规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景使用参考：-1"><span class="nav-number">2.2.</span> <span class="nav-text">场景使用参考：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SUITCSS：更加符合组件的命名方式"><span class="nav-number">3.</span> <span class="nav-text">SUITCSS：更加符合组件的命名方式</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#命名规则-1"><span class="nav-number">3.1.</span> <span class="nav-text">命名规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景使用参考：-2"><span class="nav-number">3.2.</span> <span class="nav-text">场景使用参考：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OOCSS：页面元素即对象，"><span class="nav-number">4.</span> <span class="nav-text">OOCSS：页面元素即对象，</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#规则"><span class="nav-number">4.1.</span> <span class="nav-text">规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景使用参考"><span class="nav-number">4.2.</span> <span class="nav-text">场景使用参考</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AMCSS（Attribute-Modules-for-CSS）"><span class="nav-number">5.</span> <span class="nav-text">AMCSS（Attribute Modules for CSS）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#规则-1"><span class="nav-number">5.1.</span> <span class="nav-text">规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#场景使用参考-1"><span class="nav-number">5.2.</span> <span class="nav-text">场景使用参考</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SMACSS（Scalable（可扩展）-和-Modular-Architecture（模块化）-的-CSS）"><span class="nav-number">5.3.</span> <span class="nav-text">SMACSS（Scalable（可扩展） 和 Modular Architecture（模块化） 的 CSS）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#每个-SMACSS-项目结构分为-5-种规则："><span class="nav-number">5.4.</span> <span class="nav-text">每个 SMACSS 项目结构分为 5 种规则：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#ITCSS"><span class="nav-number">6.</span> <span class="nav-text">ITCSS</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#规则-2"><span class="nav-number">6.1.</span> <span class="nav-text">规则</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

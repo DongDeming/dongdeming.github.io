@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="verdaccio," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="搭建私有的npm库一般都有如下几个目的：  安全性：核心代码不方便发布到外网 复用性：实现业务代码的复用 外部包镜像：缓存外部包，降低网络延迟 限制指定包的使用：覆盖外部包，指定使用外部包的某个版本   目前除了付费的npm库的搭建外，免费的主要有verdaccio 和 cnpm。而verdaccio 相对 cnpm 安装要简单的不要太多，因此我们先展开对verdaccio的学习。 verdacc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="verdaccio搭建npm私库">
+<meta property="og:url" content="github.tedming.com/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="搭建私有的npm库一般都有如下几个目的：  安全性：核心代码不方便发布到外网 复用性：实现业务代码的复用 外部包镜像：缓存外部包，降低网络延迟 限制指定包的使用：覆盖外部包，指定使用外部包的某个版本   目前除了付费的npm库的搭建外，免费的主要有verdaccio 和 cnpm。而verdaccio 相对 cnpm 安装要简单的不要太多，因此我们先展开对verdaccio的学习。 verdacc">
+<meta property="og:image" content="/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/image-20210804231711590.png">
+<meta property="article:published_time" content="2021-08-04T03:22:39.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.420Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="verdaccio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/image-20210804231711590.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/verdaccio搭建npm私库/"/>
+
+
+
+
+
+  <title>verdaccio搭建npm私库 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">verdaccio搭建npm私库</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-08-04T11:22:39+08:00">
+                2021-08-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AE%9E%E8%B7%B5%E6%A1%88%E4%BE%8B/" itemprop="url" rel="index">
+                    <span itemprop="name">实践案例</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h4 id="搭建私有的npm库一般都有如下几个目的："><a href="#搭建私有的npm库一般都有如下几个目的：" class="headerlink" title="搭建私有的npm库一般都有如下几个目的："></a>搭建私有的<code>npm</code>库一般都有如下几个目的：</h4><blockquote>
+<ul>
+<li>安全性：核心代码不方便发布到外网</li>
+<li>复用性：实现业务代码的复用</li>
+<li>外部包镜像：缓存外部包，降低网络延迟</li>
+<li>限制指定包的使用：覆盖外部包，指定使用外部包的某个版本</li>
+</ul>
+</blockquote>
+<p>目前除了付费的<code>npm</code>库的搭建外，免费的主要有<code>verdaccio</code> 和 <code>cnpm</code>。而<code>verdaccio</code> 相对 <code>cnpm</code> 安装要简单的不要太多，因此我们先展开对<code>verdaccio</code>的学习。</p>
+<h4 id="verdaccio-主要提供了如下的功能和特性："><a href="#verdaccio-主要提供了如下的功能和特性：" class="headerlink" title="verdaccio 主要提供了如下的功能和特性："></a><code>verdaccio</code> 主要提供了如下的功能和特性：</h4><blockquote>
+<ul>
+<li>账号权限管理：默认为htpassed 也可以通过插件引入gitlab账号体系</li>
+<li>提供默认的本地缓存，也可以通过配置提供远程缓存，并且能设置不同的缓存策略，限制占用的硬盘大小与存储时间</li>
+<li>uplinks机制设置代理，为获取外部包提供路径</li>
+<li>能够在<code>docker</code>中运行</li>
+<li>本身是一个<code>npm</code>包，对环境的要求仅依赖nodejs，安装配置简单</li>
+<li>提供web页面，能够方便的查看本地已发布的包</li>
+<li>支持<code>scope</code>包的发布，支持<code>npm yarn pnpm</code></li>
+</ul>
+</blockquote>
+<h4 id="安装与配置教程"><a href="#安装与配置教程" class="headerlink" title="安装与配置教程"></a>安装与配置教程</h4><h5 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn global add verdaccio</span><br></pre></td></tr></table></figure>
+
+<h5 id="运行verdaccio，npm私库就成功部署了"><a href="#运行verdaccio，npm私库就成功部署了" class="headerlink" title="运行verdaccio，npm私库就成功部署了"></a>运行<code>verdaccio</code>，<code>npm</code>私库就成功部署了</h5><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">➜  ~ verdaccio</span><br><span class="line"> info --- Creating default config file in /Users/username/.config/verdaccio/config.yaml</span><br><span class="line"> warn --- config file  - /Users/username/.config/verdaccio/config.yaml</span><br><span class="line"> warn --- Plugin successfully loaded: verdaccio-htpasswd</span><br><span class="line"> warn --- Plugin successfully loaded: verdaccio-audit</span><br><span class="line"> warn --- http address - http://localhost:4873/ - verdaccio/5.1.2</span><br></pre></td></tr></table></figure>
+
+<p>可以看到配置文件的位置是<code>/Users/username/.config/verdaccio/config.yaml</code> ，仓库的地址是<code>http://localhost:4873/</code>，提供的<code>web</code>范围地址同样是<code>http://localhost:4873/</code></p>
+<h5 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h5><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># This is the default config file. It allows all users to do anything,</span></span><br><span class="line"><span class="comment"># so don't use it on production systems.</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"><span class="comment"># Look here for more config file examples:</span></span><br><span class="line"><span class="comment"># https://github.com/verdaccio/verdaccio/tree/master/conf</span></span><br><span class="line"><span class="comment">#</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># path to a directory with all packages</span></span><br><span class="line"><span class="attr">storage:</span> <span class="string">./storage</span></span><br><span class="line"><span class="comment"># path to a directory with plugins to include</span></span><br><span class="line"><span class="attr">plugins:</span> <span class="string">./plugins</span></span><br><span class="line"></span><br><span class="line"><span class="attr">web:</span></span><br><span class="line">  <span class="attr">title:</span> <span class="string">Verdaccio</span></span><br><span class="line">  <span class="comment"># comment out to disable gravatar support</span></span><br><span class="line">  <span class="comment"># gravatar: false</span></span><br><span class="line">  <span class="comment"># by default packages are ordercer ascendant (asc|desc)</span></span><br><span class="line">  <span class="comment"># sort_packages: asc</span></span><br><span class="line">  <span class="comment"># convert your UI to the dark side</span></span><br><span class="line">  <span class="comment"># darkMode: true</span></span><br><span class="line">  <span class="comment"># logo: http://somedomain/somelogo.png</span></span><br><span class="line">  <span class="comment"># favicon: http://somedomain/favicon.ico | /path/favicon.ico</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># translate your registry, api i18n not available yet</span></span><br><span class="line"><span class="comment"># i18n:</span></span><br><span class="line"><span class="comment"># list of the available translations https://github.com/verdaccio/ui/tree/master/i18n/translations</span></span><br><span class="line"><span class="comment">#   web: en-US</span></span><br><span class="line"></span><br><span class="line"><span class="attr">auth:</span></span><br><span class="line">  <span class="attr">htpasswd:</span></span><br><span class="line">    <span class="attr">file:</span> <span class="string">./htpasswd</span></span><br><span class="line">    <span class="comment"># Maximum amount of users allowed to register, defaults to "+inf".</span></span><br><span class="line">    <span class="comment"># You can set this to -1 to disable registration.</span></span><br><span class="line">    <span class="comment"># max_users: 1000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># a list of other known repositories we can talk to</span></span><br><span class="line"><span class="attr">uplinks:</span></span><br><span class="line">  <span class="attr">npmjs:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">https://registry.npmjs.org/</span></span><br><span class="line"></span><br><span class="line"><span class="attr">packages:</span></span><br><span class="line">  <span class="string">'@*/*'</span><span class="string">:</span></span><br><span class="line">    <span class="comment"># scoped packages</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$all</span></span><br><span class="line">    <span class="attr">publish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">unpublish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">proxy:</span> <span class="string">npmjs</span></span><br><span class="line"></span><br><span class="line">  <span class="string">'**'</span><span class="string">:</span></span><br><span class="line">    <span class="comment"># allow all users (including non-authenticated users) to read and</span></span><br><span class="line">    <span class="comment"># publish all packages</span></span><br><span class="line">    <span class="comment">#</span></span><br><span class="line">    <span class="comment"># you can specify usernames/groupnames (depending on your auth plugin)</span></span><br><span class="line">    <span class="comment"># and three keywords: "$all", "$anonymous", "$authenticated"</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$all</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># allow all known users to publish/publish packages</span></span><br><span class="line">    <span class="comment"># (anyone can register by default, remember?)</span></span><br><span class="line">    <span class="attr">publish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">unpublish:</span> <span class="string">$authenticated</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># if package is not available locally, proxy requests to 'npmjs' registry</span></span><br><span class="line">    <span class="attr">proxy:</span> <span class="string">npmjs</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># You can specify HTTP/1.1 server keep alive timeout in seconds for incoming connections.</span></span><br><span class="line"><span class="comment"># A value of 0 makes the http server behave similarly to Node.js versions prior to 8.0.0, which did not have a keep-alive timeout.</span></span><br><span class="line"><span class="comment"># WORKAROUND: Through given configuration you can workaround following issue https://github.com/verdaccio/verdaccio/issues/301. Set to 0 in case 60 is not enough.</span></span><br><span class="line"><span class="attr">server:</span></span><br><span class="line">  <span class="attr">keepAliveTimeout:</span> <span class="number">60</span></span><br><span class="line"></span><br><span class="line"><span class="attr">middlewares:</span></span><br><span class="line">  <span class="attr">audit:</span></span><br><span class="line">    <span class="attr">enabled:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># log settings</span></span><br><span class="line"><span class="attr">logs:</span> <span class="string">&#123;</span> <span class="attr">type:</span> <span class="string">stdout,</span> <span class="attr">format:</span> <span class="string">pretty,</span> <span class="attr">level:</span> <span class="string">http</span> <span class="string">&#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">#experiments:</span></span><br><span class="line"><span class="comment">#  # support for npm token command</span></span><br><span class="line"><span class="comment">#  token: false</span></span><br><span class="line"><span class="comment">#  # disable writing body size to logs, read more on ticket 1912</span></span><br><span class="line"><span class="comment">#  bytesin_off: false</span></span><br><span class="line"><span class="comment">#  # enable tarball URL redirect for hosting tarball with a different server, the tarball_url_redirect can be a template string</span></span><br><span class="line"><span class="comment">#  tarball_url_redirect: 'https://mycdn.com/verdaccio/$&#123;packageName&#125;/$&#123;filename&#125;'</span></span><br><span class="line"><span class="comment">#  # the tarball_url_redirect can be a function, takes packageName and filename and returns the url, when working with a js configuration file</span></span><br><span class="line"><span class="comment">#  tarball_url_redirect(packageName, filename) &#123;</span></span><br><span class="line"><span class="comment">#    const signedUrl = // generate a signed url</span></span><br><span class="line"><span class="comment">#    return signedUrl;</span></span><br><span class="line"><span class="comment">#  &#125;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># This affect the web and api (not developed yet)</span></span><br><span class="line"><span class="comment">#i18n:</span></span><br><span class="line"><span class="comment">#web: en-US</span></span><br></pre></td></tr></table></figure>
+
+<p>配置文件设置相对简单</p>
+<ul>
+<li><code>storage</code> – 包的缓存位置，虽然运行<code>verdaccio</code>的目录位置会创建<code>storage</code>目录，但仍以配置项的位置为缓存位置，也可以通过插件设置远程存储</li>
+<li><code>plugin</code> – 插件存储位置</li>
+<li><code>web</code> – <code>web</code> 界面设置</li>
+<li><code>auth</code> – 权限认证，这里默认是<code>htpassed</code>, 但是可以通过插件引入<code>github</code> <code>gitlab</code>的账号体系</li>
+<li><code>uplinks</code> – 外部包仓库代理声明</li>
+<li><code>packages</code> – 包访问、发布、删除权限、以及代理设置，支持<code>scoped</code> 包</li>
+<li><code>server</code> – 服务器访问、安全设置</li>
+<li><code>middlewares</code> – 中间件设置</li>
+<li><code>logs</code> – 日志格式设置</li>
+</ul>
+<h5 id="web网址"><a href="#web网址" class="headerlink" title="web网址"></a><code>web</code>网址</h5><p><img src="/verdaccio%E6%90%AD%E5%BB%BAnpm%E7%A7%81%E5%BA%93/image-20210804231711590.png" alt="image-20210804231711590"></p>
+<h4 id="htpassed权限管理与控制"><a href="#htpassed权限管理与控制" class="headerlink" title="htpassed权限管理与控制"></a><code>htpassed</code>权限管理与控制</h4><ul>
+<li>只有简单的<code>$all</code> <code>$anonymous</code> <code>authenticated</code> 账户分组，不能支持自定义分组</li>
+<li>可以通过<code>npm adduser</code> 创建账号，也可以通过<code>htpassed</code> 命令创建账号</li>
+<li><code>max_users</code> 设置为 <code>-1</code> 之后无法通过<code>npm adduser</code> 创建账号，仅能通过<code>htpassed</code> 命令创建账号。即必须能访问该主机才能创建账号</li>
+<li>设置权限在账户名称前添加<code>$</code>符号即可，如<code>$user1 $user2</code></li>
+</ul>
+<h4 id="通过npm-yarn-下载外部包"><a href="#通过npm-yarn-下载外部包" class="headerlink" title="通过npm yarn 下载外部包"></a>通过<code>npm</code> <code>yarn</code> 下载外部包</h4><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">uplinks:</span></span><br><span class="line">  <span class="attr">npmjs:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">https://registry.npmjs.org/</span></span><br><span class="line">  <span class="attr">taobao:</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">https://registry.npm.taobao.org/</span> <span class="comment"># 添加淘宝源</span></span><br><span class="line"><span class="attr">packages:</span></span><br><span class="line">  <span class="string">'@*/*'</span><span class="string">:</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$all</span></span><br><span class="line">    <span class="attr">publish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">unpublish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">proxy:</span> <span class="string">taobao</span> <span class="comment"># 使用淘宝源</span></span><br><span class="line"></span><br><span class="line">  <span class="string">'**'</span><span class="string">:</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$all</span></span><br><span class="line">    <span class="attr">publish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">unpublish:</span> <span class="string">$authenticated</span></span><br><span class="line">    <span class="attr">proxy:</span> <span class="string">taobao</span> <span class="comment"># 使用淘宝源</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install dayjs --registry=http://localhost:4873 # 下载成功，storage目录缓存dayjs包</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add dayjs --registry=http://localhost:4873 # 下载成功，storage目录缓存dayjs包，如果yarn/global中已经缓存的包则不会缓存到storage</span><br></pre></td></tr></table></figure>
+
+<p>修改访问权限，<code>npm login</code> 后使用 <code>yarn add</code> 安装包失败</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">packages:</span></span><br><span class="line">  <span class="string">'@*/*'</span><span class="string">:</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$authenticated</span></span><br><span class="line">  <span class="string">'**'</span><span class="string">:</span></span><br><span class="line">    <span class="attr">access:</span> <span class="string">$authenticated</span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">yarn add antd-mobile --registry=http://localhost:4873</span><br><span class="line">yarn add v1.22.10</span><br><span class="line">[1/4] 🔍  Resolving packages...</span><br><span class="line">error An unexpected error occurred: "http://localhost:4873/antd-mobile: authorization required to access package antd-mobile".</span><br><span class="line">info If you think this is a bug, please open a bug report with the information provided in "/Users/username/Documents/my-projects/yarn-error.log".</span><br><span class="line">info Visit https://yarnpkg.com/en/docs/cli/add for documentation about this command.</span><br></pre></td></tr></table></figure>
+
+<p>解决方案：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">npm config set always-auth=true # 参考：https://gemfury.com/help/private-yarn/ </span><br><span class="line">yarn add antd-mobile --registry=http://localhost:4873 # 下载成功</span><br></pre></td></tr></table></figure>
+
+<h4 id="发布包"><a href="#发布包" class="headerlink" title="发布包"></a>发布包</h4><ul>
+<li>支持 <code>npm</code> <code>yarn</code> <code>pnpm</code> 的发布</li>
+</ul>
+<h4 id="永久运行verdaccio"><a href="#永久运行verdaccio" class="headerlink" title="永久运行verdaccio"></a>永久运行<code>verdaccio</code></h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">yarn global add pm2</span><br><span class="line">pm2 start verdaccio</span><br><span class="line">pm2 save # 保存应用列表，用于开机自动启动</span><br><span class="line">pm2 startup #设置开启启动</span><br></pre></td></tr></table></figure>
+
+<h4 id="参考文档"><a href="#参考文档" class="headerlink" title="参考文档"></a>参考文档</h4><p><a href="https://verdaccio.org/" target="_blank" rel="noopener">官网</a></p>
+<p><a href="https://zhaomenghuan.js.org/blog/npm-private-repository-verdaccio.html#%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86-%E7%A7%81%E6%9C%89%E5%8C%85%E7%AE%A1%E7%90%86" target="_blank" rel="noopener"><strong>npm 私有仓库工具 Verdaccio 搭建</strong></a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/verdaccio/" rel="tag"># verdaccio</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E5%B8%B8%E7%94%A8npm%E5%8C%85/" rel="next" title="工具箱">
+                <i class="fa fa-chevron-left"></i> 工具箱
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/%E5%BC%82%E6%AD%A5%E4%B8%8E%E4%BA%8B%E4%BB%B6%E6%9C%BA%E5%88%B6/" rel="prev" title="异步与事件机制">
+                异步与事件机制 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#搭建私有的npm库一般都有如下几个目的："><span class="nav-number">1.</span> <span class="nav-text">搭建私有的npm库一般都有如下几个目的：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#verdaccio-主要提供了如下的功能和特性："><span class="nav-number">2.</span> <span class="nav-text">verdaccio 主要提供了如下的功能和特性：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#安装与配置教程"><span class="nav-number">3.</span> <span class="nav-text">安装与配置教程</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#安装"><span class="nav-number">3.1.</span> <span class="nav-text">安装</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#运行verdaccio，npm私库就成功部署了"><span class="nav-number">3.2.</span> <span class="nav-text">运行verdaccio，npm私库就成功部署了</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#配置文件"><span class="nav-number">3.3.</span> <span class="nav-text">配置文件</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#web网址"><span class="nav-number">3.4.</span> <span class="nav-text">web网址</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#htpassed权限管理与控制"><span class="nav-number">4.</span> <span class="nav-text">htpassed权限管理与控制</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#通过npm-yarn-下载外部包"><span class="nav-number">5.</span> <span class="nav-text">通过npm yarn 下载外部包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#发布包"><span class="nav-number">6.</span> <span class="nav-text">发布包</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#永久运行verdaccio"><span class="nav-number">7.</span> <span class="nav-text">永久运行verdaccio</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参考文档"><span class="nav-number">8.</span> <span class="nav-text">参考文档</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

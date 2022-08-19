@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Babel7," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="Babel 是一个工具链，主要用于将 ES2015+的语法转换为向后兼容的语法，以及插入新的语法特性。以便 JS 代码能够运行在当前新版和旧版的浏览器或其他环境中。Babel 本身并不能完成这些工作，而是依赖于众多的 plugin 来完成。Babel7 启用了域的概念，原来的babel-xxx统一转换为@babel&#x2F;xxx。 Babel重要组成 @babel&#x2F;cli @babel&#x2F;core @ba">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Babel7介绍">
+<meta property="og:url" content="github.tedming.com/Babel/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="Babel 是一个工具链，主要用于将 ES2015+的语法转换为向后兼容的语法，以及插入新的语法特性。以便 JS 代码能够运行在当前新版和旧版的浏览器或其他环境中。Babel 本身并不能完成这些工作，而是依赖于众多的 plugin 来完成。Babel7 启用了域的概念，原来的babel-xxx统一转换为@babel&#x2F;xxx。 Babel重要组成 @babel&#x2F;cli @babel&#x2F;core @ba">
+<meta property="article:published_time" content="2022-04-16T16:53:30.000Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.401Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="Babel7">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/Babel/"/>
+
+
+
+
+
+  <title>Babel7介绍 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/Babel/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Babel7介绍</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-04-17T00:53:30+08:00">
+                2022-04-17
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%89%8D%E7%AB%AF%E6%9E%84%E5%BB%BA/" itemprop="url" rel="index">
+                    <span itemprop="name">前端构建</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Babel/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/Babel/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><code>Babel</code> 是一个工具链，主要用于将 <code>ES2015+</code>的语法转换为向后兼容的语法，以及插入新的语法特性。以便 <code>JS</code> 代码能够运行在当前新版和旧版的浏览器或其他环境中。<code>Babel</code> 本身并不能完成这些工作，而是依赖于众多的 <code>plugin</code> 来完成。<code>Babel7</code> 启用了域的概念，原来的<code>babel-xxx</code>统一转换为<code>@babel/xxx</code>。</p>
+<h3 id="Babel重要组成"><a href="#Babel重要组成" class="headerlink" title="Babel重要组成"></a>Babel重要组成</h3><ul>
+<li>@babel/cli</li>
+<li>@babel/core</li>
+<li>@babel/preset-env</li>
+<li>@babel/plugin-transform-runtime</li>
+</ul>
+<h3 id="案例讲解"><a href="#案例讲解" class="headerlink" title="案例讲解"></a>案例讲解</h3><h4 id="项目代码"><a href="#项目代码" class="headerlink" title="项目代码"></a>项目代码</h4><figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// index.js</span></span><br><span class="line"><span class="keyword">const</span> fn = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'hello world'</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="babel-core-和-babel-cli"><a href="#babel-core-和-babel-cli" class="headerlink" title="@babel/core 和 @babel/cli"></a>@babel/core 和 @babel/cli</h4><p><code>@babel/core</code>提供核心功能，<code>@babel/cli</code> 是<code>babel</code> 内建的命令行工具。</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/core @babel/cli</span><br></pre></td></tr></table></figure>
+
+<p>执行<code>yarn start</code></p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	<span class="attr">"scripts"</span>: &#123;</span><br><span class="line">    <span class="attr">"start"</span>: <span class="string">"babel src --out-dir dist"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>得到结果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span> fn = <span class="function"><span class="params">()</span> =&gt;</span> &#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'hello world'</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>生成的代码没有任何的改变，这是因为语法的转换和新特性的插入依赖于众多的 <code>plugin</code> 来完成。</p>
+<h4 id="babel-preset-env"><a href="#babel-preset-env" class="headerlink" title="@babel/preset-env"></a><code>@babel/preset-env</code></h4><p>相比于列举一个个插件，<code>babel</code> 提供了方便的<code>preset</code>集合引入的方式，<code>@babel/preset-env</code> 可以根据配置可以动态的引入对应的插件集合（语法解析，<code>polyfill</code>特性支持）。对于JS语法的支持，<code>@babel/preset-env</code>基本上形成了大一统的形式。</p>
+<ul>
+<li><p>主要根据以下配置动态引入相应的插件集合如下：</p>
+<ul>
+<li><p><code>targets</code>：描述支持的浏览器环境</p>
+</li>
+<li><p><code>useBuiltIns</code>：这个属性决定引入 <code>polyfill</code> 的方式</p>
+</li>
+<li><p><code>corejs</code>：表示引入哪个版本的 <code>core-js</code></p>
+</li>
+<li><p>其它集合</p>
+<ul>
+<li><p><code>@babel/preset-react</code>：提供对<code>react jsx</code> 语法支持</p>
+</li>
+<li><p><code>@babel/preset-typescript</code>:提供对<code>typescript</code>语法支持，用于剔除类型注解，不会做类型检查</p>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<p>引入 <code>@babel/preset-env</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/preset-env</span><br></pre></td></tr></table></figure>
+
+<p>创建 <code>babel</code> 配置文件</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// babel.config.json</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">"presets"</span>: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"@babel/preset-env"</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">"useBuiltIns"</span>: <span class="string">"usage"</span></span><br><span class="line">        <span class="string">"corejs"</span>: <span class="number">2</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续执行<code>yarn start</code>得到结果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> fn = <span class="function"><span class="keyword">function</span> <span class="title">fn</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="built_in">console</span>.log(<span class="string">'hello world'</span>);</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<p>此时箭头函数被转换成了普通的函数，<code>const</code> 被转换成了<code>var</code>，插件完成了语法的转换。</p>
+<h4 id="babel-plugin-transform-runtime"><a href="#babel-plugin-transform-runtime" class="headerlink" title="@babel/plugin-transform-runtime"></a>@babel/plugin-transform-runtime</h4><p><code>@babel/preset-env</code>和 <code>@babel/plugin-transform-runtime</code> 都能实现新特性的引入。修改<code>index.js</code>，新增<code>index2.js</code>看看两者有何不同</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// src/index.js</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal</span> </span>&#123;</span><br><span class="line">	say() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// src/index2.js</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Animal2</span> </span>&#123;</span><br><span class="line">	say() &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>结果</p>
+<p><code>dist/index.js</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_classCallCheck</span>(<span class="params">instance, Constructor</span>) </span>&#123; <span class="keyword">if</span> (!(instance <span class="keyword">instanceof</span> Constructor)) &#123; <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">"Cannot call a class as a function"</span>); &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_defineProperties</span>(<span class="params">target, props</span>) </span>&#123; <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; props.length; i++) &#123; <span class="keyword">var</span> descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || <span class="literal">false</span>; descriptor.configurable = <span class="literal">true</span>; <span class="keyword">if</span> (<span class="string">"value"</span> <span class="keyword">in</span> descriptor) descriptor.writable = <span class="literal">true</span>; <span class="built_in">Object</span>.defineProperty(target, descriptor.key, descriptor); &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_createClass</span>(<span class="params">Constructor, protoProps, staticProps</span>) </span>&#123; <span class="keyword">if</span> (protoProps) _defineProperties(Constructor.prototype, protoProps); <span class="keyword">if</span> (staticProps) _defineProperties(Constructor, staticProps); <span class="built_in">Object</span>.defineProperty(Constructor, <span class="string">"prototype"</span>, &#123; <span class="attr">writable</span>: <span class="literal">false</span> &#125;); <span class="keyword">return</span> Constructor; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Animal = <span class="comment">/*#__PURE__*/</span><span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Animal</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    _classCallCheck(<span class="keyword">this</span>, Animal);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  _createClass(Animal, [&#123;</span><br><span class="line">    key: <span class="string">"say"</span>,</span><br><span class="line">    value: <span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> Animal;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<p><code>dist/index2.js</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_classCallCheck</span>(<span class="params">instance, Constructor</span>) </span>&#123; <span class="keyword">if</span> (!(instance <span class="keyword">instanceof</span> Constructor)) &#123; <span class="keyword">throw</span> <span class="keyword">new</span> <span class="built_in">TypeError</span>(<span class="string">"Cannot call a class as a function"</span>); &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_defineProperties</span>(<span class="params">target, props</span>) </span>&#123; <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; props.length; i++) &#123; <span class="keyword">var</span> descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || <span class="literal">false</span>; descriptor.configurable = <span class="literal">true</span>; <span class="keyword">if</span> (<span class="string">"value"</span> <span class="keyword">in</span> descriptor) descriptor.writable = <span class="literal">true</span>; <span class="built_in">Object</span>.defineProperty(target, descriptor.key, descriptor); &#125; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">_createClass</span>(<span class="params">Constructor, protoProps, staticProps</span>) </span>&#123; <span class="keyword">if</span> (protoProps) _defineProperties(Constructor.prototype, protoProps); <span class="keyword">if</span> (staticProps) _defineProperties(Constructor, staticProps); <span class="built_in">Object</span>.defineProperty(Constructor, <span class="string">"prototype"</span>, &#123; <span class="attr">writable</span>: <span class="literal">false</span> &#125;); <span class="keyword">return</span> Constructor; &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Animal2 = <span class="comment">/*#__PURE__*/</span><span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Animal2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    _classCallCheck(<span class="keyword">this</span>, Animal2);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  _createClass(Animal2, [&#123;</span><br><span class="line">    key: <span class="string">"say"</span>,</span><br><span class="line">    value: <span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;]);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> Animal2;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<p>可以看到 <code>_classCallCheck</code>, <code>_defineProperties</code>,  <code>_createClass</code> 等方法以内联的方式插入到了各自的文件代码中，造成了冗余。结果这个问题则需要使用 <code>@babel/plugin-transform-runtime</code></p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yarn add @babel/plugin-transform-runtime</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// babel.config.json</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="attr">"plugins"</span>: [</span><br><span class="line">    [<span class="string">"@babel/plugin-transform-runtime"</span>, &#123;</span><br><span class="line">      <span class="attr">"corejs"</span>: <span class="number">3</span></span><br><span class="line">    &#125;]</span><br><span class="line">  ],</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>得到结果</p>
+<p><code>dist/index.js</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _interopRequireDefault = <span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/interopRequireDefault"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _classCallCheck2 = _interopRequireDefault(<span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/classCallCheck"</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _createClass2 = _interopRequireDefault(<span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/createClass"</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Animal = <span class="comment">/*#__PURE__*/</span><span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Animal</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    (<span class="number">0</span>, _classCallCheck2.default)(<span class="keyword">this</span>, Animal);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  (<span class="number">0</span>, _createClass2.default)(Animal, [&#123;</span><br><span class="line">    key: <span class="string">"say"</span>,</span><br><span class="line">    value: <span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;]);</span><br><span class="line">  <span class="keyword">return</span> Animal;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<p><code>dist/index2.js</code>：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">"use strict"</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _interopRequireDefault = <span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/interopRequireDefault"</span>);</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _classCallCheck2 = _interopRequireDefault(<span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/classCallCheck"</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> _createClass2 = _interopRequireDefault(<span class="built_in">require</span>(<span class="string">"@babel/runtime-corejs3/helpers/createClass"</span>));</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> Animal2 = <span class="comment">/*#__PURE__*/</span><span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">function</span> <span class="title">Animal2</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    (<span class="number">0</span>, _classCallCheck2.default)(<span class="keyword">this</span>, Animal2);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  (<span class="number">0</span>, _createClass2.default)(Animal2, [&#123;</span><br><span class="line">    key: <span class="string">"say"</span>,</span><br><span class="line">    value: <span class="function"><span class="keyword">function</span> <span class="title">say</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="string">'hello world'</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;]);</span><br><span class="line">  <span class="keyword">return</span> Animal2;</span><br><span class="line">&#125;();</span><br></pre></td></tr></table></figure>
+
+<h4 id="插件库汇总说明"><a href="#插件库汇总说明" class="headerlink" title="插件库汇总说明"></a>插件库汇总说明</h4><table>
+<thead>
+<tr>
+<th>插件/库</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>core-js</code></td>
+<td>所有 <code>polyfill</code> 方案都需要依赖于它, 现在有1， 2， 3版本</td>
+</tr>
+<tr>
+<td><code>regenerator-runtime</code></td>
+<td>提供 <code>generator, async/await</code> 的<code>pollyfill</code> 是对<code>core-js</code>的补充</td>
+</tr>
+<tr>
+<td><code>@babel/runtime</code></td>
+<td>提供模块化的 <code>helper</code> 方法</td>
+</tr>
+<tr>
+<td><del>@babel/polyfill</del></td>
+<td>包含 <code>core-js</code> 和 <code>regenerator runtime</code> ，已被废弃。存在缺陷：1， 会打包所有<code>polyfill</code>, 2.会污染全局变量</td>
+</tr>
+<tr>
+<td><code>@babel/preset-env</code></td>
+<td>能根据设置加载对应的<code>polyfill</code> 插件，并已内联的方式插入<code>helper</code>以及<code>polyfill</code>代码； 不会污染全局变量，但是会造成代码冗余；对应当年的<code>ES</code>标准。不会提供<code>stage-0~3</code>的<code>polyfill</code></td>
+</tr>
+<tr>
+<td><code>@babel/plugin-transform-runtime</code></td>
+<td>将内联的方式插入<code>helper</code>以及<code>polyfill</code>的require引用，减少代码冗余。同样不会污染全局变量</td>
+</tr>
+</tbody></table>
+<p>综上所述： <code>@babel/preset-env</code>解决了<code>polyfill</code>的动态引入，<code>@babel/plugin-transform-runtime</code> 减少了内联插入的代码冗余。两者结合解决了<code>polyfill</code> 的引入问题。</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// babel.config.json</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="attr">"presets"</span>: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"@babel/preset-env"</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="attr">"useBuiltIns"</span>: <span class="string">"usage"</span>,</span><br><span class="line">        <span class="attr">"corejs"</span>: <span class="number">3</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"plugins"</span>: [</span><br><span class="line">    [<span class="string">"@babel/plugin-transform-runtime"</span>, &#123;</span><br><span class="line">      <span class="attr">"corejs"</span>: <span class="number">3</span></span><br><span class="line">    &#125;]</span><br><span class="line">  ],</span><br><span class="line">  <span class="attr">"targets"</span>: &#123;</span><br><span class="line">    <span class="attr">"node"</span>: <span class="string">"4"</span></span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="Node-支持"><a href="#Node-支持" class="headerlink" title="Node 支持"></a>Node 支持</h3><ul>
+<li><code>@babel/node</code> 支持 <code>Node</code> 的 <code>REPL</code> 环境的所有功能，而且可以直接运行 <code>ES6</code> 代码。</li>
+</ul>
+<h3 id="废弃的插件以及-stage阶段的语法支持"><a href="#废弃的插件以及-stage阶段的语法支持" class="headerlink" title="废弃的插件以及 stage阶段的语法支持"></a>废弃的插件以及 <code>stage</code>阶段的语法支持</h3><ul>
+<li><p>废弃<code>babel-preset-es20**</code> 年份插件</p>
+</li>
+<li><p>废弃<code>babel-preset-stage-*</code> proposal stage 插件</p>
+<ul>
+<li>要使用<code>stage-0, 1, 2, 3</code>的语法直接引入对应的插件<code>@babel/plugin-proposal-*</code></li>
+</ul>
+</li>
+<li><p>使用 <code>npx babel-upgrade</code> 检查与升级</p>
+</li>
+</ul>
+<h3 id="配置文件"><a href="#配置文件" class="headerlink" title="配置文件"></a>配置文件</h3><h4 id="配置文件优先级"><a href="#配置文件优先级" class="headerlink" title="配置文件优先级"></a>配置文件优先级</h4><ul>
+<li><code>babel.config.json &lt; .babelrc &lt; programmatic options from @babel/cli</code> or babel-loader</li>
+<li>同目录下，若两种类型的配置文件都存在，则<code>.babelrc</code>文件会<em>合并覆盖</em><code>babel.config.json</code>文件。</li>
+<li>项目文件配置：<ul>
+<li><code>babel.config.json</code></li>
+<li>能够作用于<code>node_modules</code>, <code>symbollink</code></li>
+</ul>
+</li>
+<li>相对文件配置<ul>
+<li><code>.babelrc.json</code></li>
+<li><code>package.json</code> 中的<code>.babel</code> 配置，等同于<code>.babelrc.json</code></li>
+</ul>
+</li>
+</ul>
+<h4 id="执行顺序"><a href="#执行顺序" class="headerlink" title="执行顺序"></a>执行顺序</h4><ul>
+<li><code>plugins</code>比<code>presets</code>先执行</li>
+<li><code>plugins</code> 的执行顺序是从左到右</li>
+<li><code>presets</code> 的执行顺序是从右到左</li>
+</ul>
+<h4 id="合并规则"><a href="#合并规则" class="headerlink" title="合并规则"></a>合并规则</h4><ol>
+<li>基本上之用直接覆盖Object.assign()合并，以下3中情况特殊</li>
+<li>parserOpts对象的属性使用Object.assign()合并</li>
+<li>generatorOpts对象的属性使用Object.assign() 合并</li>
+<li><code>plugins</code> 和 <code>presets</code> 使用的是合并<code>concat</code>数组，并去除同名的前置插件设置。</li>
+</ol>
+<h4 id="查找"><a href="#查找" class="headerlink" title="查找"></a>查找</h4><p>Babel7开始，Babel具有“根”目录的概念，默认为当前工作目录。以下为主要的配置查找相关的配置选项，有些可以由配置文件提供，有些则是由程序化选项（<code>programmatic options</code>），还有一些是在脚本执行的过程中动态生成。为被解析的代码提供查找配置的依据。</p>
+<table>
+<thead>
+<tr>
+<th>Options</th>
+<th>说明</th>
+<th>仅程序化选项（programmatic options）</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>cwd</code></td>
+<td>程序化选项中所有路径的相对工作目录</td>
+<td></td>
+<td><code>process.cwd()</code></td>
+</tr>
+<tr>
+<td><code>filename</code></td>
+<td>当前正在编译的代码对应的文件名（如果有）。文件名未知时并非所有babel的功能都可用（如：<code>babelrc</code>选项），因为选项的子集依赖于文件名来实现其功能。</td>
+<td>是（猜测是解析过程生成）</td>
+<td>正在编译的代码对应的文件名</td>
+</tr>
+<tr>
+<td><code>root</code></td>
+<td>默认的项目文件目录地址，受<code>rootMode</code>影响。<br>使用场景: <br>1. 查找默认的<code>configFile</code>值时的基本目录<code>path.resolve(opts.root, &quot;babel.config.json&quot;)</code><br>2. 作为：<code>babelrcRoots</code> 的默认值</td>
+<td>是</td>
+<td><code>opts.cwd</code></td>
+</tr>
+<tr>
+<td><code>rootMode</code></td>
+<td>决定<code>opts.root</code>取值的模式<br><br>选项(<code>upward</code> <code>upward-optional</code> 现在最终会冒泡查找到系统的根目录，使用时要谨慎)<br> - <code>root</code>: 取<code>opts.root</code>做根目录<br> - <code>upward</code>: <code>opts.root</code>目录向外查找含有<code>babel.config.json</code>的目录作为根目录，找不到则报错<br>- <code>upward-optional</code>: <code>opts.root</code>目录向外查找含有<code>babel.config.json</code>的目录作为根目录，找不到则取<code>opts.root</code>做根目录<br><br>应用：<br>适用于当在<code>monorepos</code>子项目中执行脚本时，向外部查找全局的公共<code>babel</code>配置。（因为默认情况下<code>babel</code>会在出现<code>package.json</code> 的目录停止向上检索配置文件）</td>
+<td>是</td>
+<td><code>root</code></td>
+</tr>
+<tr>
+<td><code>configFile</code></td>
+<td>显式指定<em>项目配置文件</em></td>
+<td>是</td>
+<td><code>path.resolve(opts.root, &quot;babel.config.json&quot;)</code>，找不到该文件则为<code>false</code></td>
+</tr>
+<tr>
+<td><code>babelrc</code></td>
+<td>决定是否要加载<em>相对文件配置</em>，并作用于当前正在编译的代码。为<code>true</code> 时会向上查找相对于当前<code>filename</code>路径的<em>相对文件配置</em>，遇到<code>package.json</code> 停止。如果找到的配置不在<em>项目文件配置</em>的<code>babelrcRoots</code>中，则会被忽略</td>
+<td></td>
+<td>当<code>opts.filename</code>选项有值时，为<code>true</code></td>
+</tr>
+<tr>
+<td><code>babelrcRoots</code></td>
+<td>指定哪些目录下的相对文件配置有效</td>
+<td></td>
+<td><code>opts.root</code></td>
+</tr>
+</tbody></table>
+<p>在查找配置的过程中，<code>babel</code>主要做如下工作</p>
+<ul>
+<li>确定项目的根<code>opts.root</code></li>
+<li>确定<code>configFile</code>文件, 根据<code>opts.root</code>或显式指定。此文件为项目配置文件，能够作用于项目目录中的文件，以及<code>node_modules</code>, <code>symbollink</code></li>
+<li>根据<code>filename</code>决定是否要查找<em>相对文件配置<em>，根据<code>babelrcRoots</code> 决定是否要忽略该</em>相对文件配置</em></li>
+<li>合并<code>.babelrc.json</code> 和<code>babel.config.json</code> 作为当前编译代码的最终配置</li>
+<li>无论是 <em>项目配置文件</em> 还是 <em>相对配置文件</em> 往上搜索配置的过程中，如果在某一层找到了<code>package.json</code>文件，就会停止搜索。</li>
+</ul>
+<h3 id="monorepos应用"><a href="#monorepos应用" class="headerlink" title="monorepos应用"></a><code>monorepos</code>应用</h3><p>每个<code>package</code> 可以设置自己的<code>.babelrc.json</code>，并在 <em>项目配置文件中</em>设置<code>babelrcRoots</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">babelrcRoots: [</span><br><span class="line">  <span class="comment">// 表示不要忽略根目录下的.babelrc.json</span></span><br><span class="line">  ".",</span><br><span class="line"></span><br><span class="line">	<span class="comment">// 表示不要忽略 monorepos 子目录中的.babelrc.json</span></span><br><span class="line">  <span class="string">"./packages/*"</span></span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+
+<p>每个<code>package</code> 可以设置自己的<code>.babelrc.json</code>，并设置<code>rootMode</code></p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rootMode: "upward" // 或 "upward-optional"</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Babel7/" rel="tag"># Babel7</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E5%89%8D%E7%AB%AF%E4%BB%A3%E7%A0%81%E5%9F%8B%E7%82%B9%E5%AE%9E%E8%B7%B5%E7%AC%94%E8%AE%B0/" rel="next" title="前端代码埋点实践笔记">
+                <i class="fa fa-chevron-left"></i> 前端代码埋点实践笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E5%8E%9F%E7%90%86/" rel="prev" title="《单元测试的艺术》一">
+                《单元测试的艺术》一 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Babel重要组成"><span class="nav-number">1.</span> <span class="nav-text">Babel重要组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#案例讲解"><span class="nav-number">2.</span> <span class="nav-text">案例讲解</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#项目代码"><span class="nav-number">2.1.</span> <span class="nav-text">项目代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#babel-core-和-babel-cli"><span class="nav-number">2.2.</span> <span class="nav-text">@babel&#x2F;core 和 @babel&#x2F;cli</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#babel-preset-env"><span class="nav-number">2.3.</span> <span class="nav-text">@babel&#x2F;preset-env</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#babel-plugin-transform-runtime"><span class="nav-number">2.4.</span> <span class="nav-text">@babel&#x2F;plugin-transform-runtime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#插件库汇总说明"><span class="nav-number">2.5.</span> <span class="nav-text">插件库汇总说明</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Node-支持"><span class="nav-number">3.</span> <span class="nav-text">Node 支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#废弃的插件以及-stage阶段的语法支持"><span class="nav-number">4.</span> <span class="nav-text">废弃的插件以及 stage阶段的语法支持</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#配置文件"><span class="nav-number">5.</span> <span class="nav-text">配置文件</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#配置文件优先级"><span class="nav-number">5.1.</span> <span class="nav-text">配置文件优先级</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#执行顺序"><span class="nav-number">5.2.</span> <span class="nav-text">执行顺序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#合并规则"><span class="nav-number">5.3.</span> <span class="nav-text">合并规则</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#查找"><span class="nav-number">5.4.</span> <span class="nav-text">查找</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#monorepos应用"><span class="nav-number">6.</span> <span class="nav-text">monorepos应用</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

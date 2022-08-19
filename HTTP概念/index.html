@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="层次 协议    应用层 HTTP DNS   传输层 TCP   网络层 IP ARP   数据链路层    [URI][URI] 格式： http:&#x2F;&#x2F;user:pass@www.example.com:80&#x2F;dir&#x2F;index.html?uid&#x3D;1#ch1    片段 含义    http 协议名称   User:pass 登陆信息   www.example.com 服务器地址">
+<meta property="og:type" content="article">
+<meta property="og:title" content="开发者手册&#x2F;HTTP概念">
+<meta property="og:url" content="github.tedming.com/HTTP%E6%A6%82%E5%BF%B5/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="层次 协议    应用层 HTTP DNS   传输层 TCP   网络层 IP ARP   数据链路层    [URI][URI] 格式： http:&#x2F;&#x2F;user:pass@www.example.com:80&#x2F;dir&#x2F;index.html?uid&#x3D;1#ch1    片段 含义    http 协议名称   User:pass 登陆信息   www.example.com 服务器地址">
+<meta property="article:published_time" content="2022-07-29T07:38:59.403Z">
+<meta property="article:modified_time" content="2022-07-29T07:38:59.403Z">
+<meta property="article:author" content="Ted">
+<meta name="twitter:card" content="summary">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/HTTP概念/"/>
+
+
+
+
+
+  <title>开发者手册/HTTP概念 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/HTTP%E6%A6%82%E5%BF%B5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">开发者手册/HTTP概念</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-07-29T15:38:59+08:00">
+                2022-07-29
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/HTTP%E6%A6%82%E5%BF%B5/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/HTTP%E6%A6%82%E5%BF%B5/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <table>
+<thead>
+<tr>
+<th>层次</th>
+<th>协议</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>应用层</td>
+<td>HTTP DNS</td>
+</tr>
+<tr>
+<td>传输层</td>
+<td>TCP</td>
+</tr>
+<tr>
+<td>网络层</td>
+<td>IP ARP</td>
+</tr>
+<tr>
+<td>数据链路层</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>[URI][URI] 格式： <code>http://user:pass@www.example.com:80/dir/index.html?uid=1#ch1</code></p>
+<table>
+<thead>
+<tr>
+<th>片段</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>http</td>
+<td>协议名称</td>
+</tr>
+<tr>
+<td>User:pass</td>
+<td>登陆信息</td>
+</tr>
+<tr>
+<td><a href="http://www.example.com" target="_blank" rel="noopener">www.example.com</a></td>
+<td>服务器地址</td>
+</tr>
+<tr>
+<td>80</td>
+<td>服务器端口号</td>
+</tr>
+<tr>
+<td>dir/index.html</td>
+<td>带层次的文件路径</td>
+</tr>
+<tr>
+<td>uid=1</td>
+<td>查询字符串</td>
+</tr>
+<tr>
+<td>ch=1</td>
+<td>片段标识符</td>
+</tr>
+</tbody></table>
+<p>HTTP规范了浏览器/服务器间数据传输的规范，但是在实际上有些客户端/服务器间并不遵守其规范（各大互联网公司的协议其实只要符合tcp/ip标准就能允许，目的有保证数据不被窃取，反网络爬虫等）</p>
+<h3 id="HTTP"><a href="#HTTP" class="headerlink" title="HTTP"></a>HTTP</h3><ol>
+<li><p>服务器不会主动响应，除非客户端先发送请求</p>
+<table>
+<thead>
+<tr>
+<th>请求报文</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>方法</td>
+<td></td>
+</tr>
+<tr>
+<td>URI</td>
+<td></td>
+</tr>
+<tr>
+<td>协议版本</td>
+<td></td>
+</tr>
+<tr>
+<td>可选的请求首部字段</td>
+<td></td>
+</tr>
+<tr>
+<td>内容实体</td>
+<td></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>响应报文</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td>协议版本</td>
+<td></td>
+</tr>
+<tr>
+<td>状态码</td>
+<td></td>
+</tr>
+<tr>
+<td>原因短语</td>
+<td></td>
+</tr>
+<tr>
+<td>可选的响应首部字段</td>
+<td></td>
+</tr>
+<tr>
+<td>内容实体</td>
+<td></td>
+</tr>
+</tbody></table>
+</li>
+<li><p>是无状态协议（stateless），因此有了cookie技术</p>
+<table>
+<thead>
+<tr>
+<th>请求方法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GET</td>
+<td>获取资源</td>
+</tr>
+<tr>
+<td>POST</td>
+<td>推送信息（常用于创建）</td>
+</tr>
+<tr>
+<td>PUT</td>
+<td>HTTP/1.1的PUT方法自身不带验证机制，任何人都可以上传文件（但可以通过WEB程序的验证机制验证，如REST架构）；常用于覆盖式的更新，并希望确保重复操作的结果相同（幂等性）</td>
+</tr>
+<tr>
+<td>HEAD</td>
+<td>不返回报文主体，用于确认URI的有效性以及资源的更新时间等</td>
+</tr>
+<tr>
+<td>DELETE</td>
+<td>HTTP/1.1的DELETE方法自身不带验证机制，任何人都可以上传文件（但可以通过WEB程序的验证机制验证，如REST架构）；删除指定资源</td>
+</tr>
+<tr>
+<td>OPTIONS</td>
+<td>查询服务器支持的请求方法</td>
+</tr>
+<tr>
+<td>CONNECT</td>
+<td>要求与代理服务器通信时建立隧道（tunel），实现用隧道协议进行TCP通信，主要使用[SSL][SSL] 和 [TLS][TLS]协议加密内容。之后该服务器会代替客户端与目标主机建立连接。该代理服务器会向客户端发送或者接受TCP消息流；让服务器代替用户去访问其它网页，之后把数据原原本本的返回给用户。这样用户就可以访问到一些只有服务器上才能访问到的网站了，这就是HTTP代理。</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>持久化（HTTP keep-alive）</p>
+<ol>
+<li>每次请求建立连接与断开，会增加通信量的开销（减少这部分开销）</li>
+<li>持久化特点：只要任意一端没有明确提出断开连接， 则保持TCP连接状态</li>
+<li>HTTP/1.1 所有的连接默认都是持久连接</li>
+</ol>
+</li>
+</ol>
+<h3 id="问题"><a href="#问题" class="headerlink" title="问题"></a>问题</h3><ol>
+<li>HTTP 每次都需要通过3次握手来确保数据已经准确送达了，为什么后续的持久化相关的图片中没有出现3次握手？（每个报文）<ol>
+<li>A：图片中的是HTTP请求，而非3次握手。首次3次握手只是建立连接通道</li>
+</ol>
+</li>
+</ol>
+<h3 id="扩展"><a href="#扩展" class="headerlink" title="扩展"></a>扩展</h3><ol>
+<li>CGI(Common Gateway Interface) 通用网关接口</li>
+<li>REST(Representational State Transfer，表征状态转移) 架构</li>
+</ol>
+<p>[[RUI]: Uniform Resource Identifier 统一资源标识符</p>
+<p>[URL]: Uniform Resource Locator 统一资源定位符</p>
+<p>[SSL]: Secure Socket Layer 安全套接层协议</p>
+<p>[TLS]: Transport Layer Security 传输层安全协议</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95%E5%8E%9F%E7%90%86/" rel="next" title="《单元测试的艺术》一">
+                <i class="fa fa-chevron-left"></i> 《单元测试的艺术》一
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/ant-design%E6%BA%90%E7%A0%81%E9%98%85%E8%AF%BB/" rel="prev" title="开发者手册/ant-design源码阅读">
+                开发者手册/ant-design源码阅读 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">55</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#HTTP"><span class="nav-number">1.</span> <span class="nav-text">HTTP</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#问题"><span class="nav-number">2.</span> <span class="nav-text">问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展"><span class="nav-number">3.</span> <span class="nav-text">扩展</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
