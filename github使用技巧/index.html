@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Ted的探索之旅">
 <meta property="og:description" content="搜索技巧 指定搜索范围in:name xxx &#x2F;&#x2F; 按照项目名搜索in:readme xxx &#x2F;&#x2F; 按照README搜索in:description xxx &#x2F;&#x2F; 按照description搜索  增加筛选条件：stars:&gt;xxx &#x2F;&#x2F; stars数大于xxxforks:&gt;xxx &#x2F;&#x2F; forks数大于xxxlanguage:xxx &#x2F;&#x2F; 编程语言是xxxpushed:&gt;YYY">
 <meta property="article:published_time" content="2020-03-24T02:04:07.000Z">
-<meta property="article:modified_time" content="2022-08-24T01:18:48.771Z">
+<meta property="article:modified_time" content="2022-08-24T01:35:20.367Z">
 <meta property="article:author" content="Ted">
 <meta name="twitter:card" content="summary">
 
@@ -349,8 +349,17 @@
 </li>
 </ol>
 <h4 id="代码无法推送实例与解决方案"><a href="#代码无法推送实例与解决方案" class="headerlink" title="代码无法推送实例与解决方案"></a>代码无法推送实例与解决方案</h4><ol>
-<li><code>ping github.com</code> 看看能否访问网址。如果不行，在<code>/etc/hosts</code>中设置映射<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">140.82.112.4 github.com</span><br><span class="line">199.232.69.194 github.global.ssl.fastly.net</span><br><span class="line">52.217.131.161 github-cloud.s3.amazonaws.com</span><br><span class="line">185.199.110.133 raw.github.com</span><br><span class="line">185.199.110.133 raw.githubusercontent.com</span><br></pre></td></tr></table></figure></li>
-<li>检查代理，如果代理没有问题，则<strong>使用流量而非公司wifi</strong></li>
+<li><p><code>ping github.com</code> 看看能否访问网址。如果不行，在<code>/etc/hosts</code>中设置映射</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">140.82.112.4 github.com</span><br><span class="line">199.232.69.194 github.global.ssl.fastly.net</span><br><span class="line">52.217.131.161 github-cloud.s3.amazonaws.com</span><br><span class="line">185.199.110.133 raw.github.com</span><br><span class="line">185.199.110.133 raw.githubusercontent.com</span><br></pre></td></tr></table></figure></li>
+<li><p>检查代理，如果代理没有问题，则<strong>使用流量而非公司wifi</strong></p>
+</li>
+<li><p>302</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error: RPC 失败。HTTP 302 curl 22 The requested URL returned error: 302</span><br><span class="line">### 解决： git config --global http.followRedirects true</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>405</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error: RPC 失败。HTTP 405 curl 22 The requested URL returned error: 405</span><br><span class="line">### Network problems . Switch your own hotspot , No company network</span><br></pre></td></tr></table></figure></li>
+<li><p>32 unable to access</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Unable to access &#39;https:&#x2F;&#x2F;github.com&#x2F;chenbiao994700146&#x2F;mybatis-plus.git&#x2F;&#39;: SSL certificate problem: unable to get local issuer certificate</span><br><span class="line">### git config --global http.sslVerify false</span><br></pre></td></tr></table></figure></li>
 </ol>
 
       
