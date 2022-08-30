@@ -86,7 +86,7 @@
 <meta property="og:site_name" content="Ted的探索之旅">
 <meta property="og:description" content="umi 中  useLocation() 结果中没有 query, 以及定义 query 内部字段声明123import &amp;#123; useLocation, useModel, Location &amp;#125; from &#39;umi&#39;;  const &amp;#123; query &amp;#125; &#x3D; useLocation() as Location; &#x2F;&#x2F; Location 中声明了querycons">
 <meta property="article:published_time" content="2022-08-25T07:19:43.000Z">
-<meta property="article:modified_time" content="2022-08-25T07:25:55.348Z">
+<meta property="article:modified_time" content="2022-08-30T08:47:19.353Z">
 <meta property="article:author" content="Ted">
 <meta property="article:tag" content="实践经验">
 <meta name="twitter:card" content="summary">
@@ -343,6 +343,21 @@
       
         <h4 id="umi-中-useLocation-结果中没有-query-以及定义-query-内部字段声明"><a href="#umi-中-useLocation-结果中没有-query-以及定义-query-内部字段声明" class="headerlink" title="umi 中  useLocation() 结果中没有 query, 以及定义 query 内部字段声明"></a><code>umi</code> 中  <code>useLocation()</code> 结果中没有 <code>query</code>, 以及定义 <code>query</code> 内部字段声明</h4><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> &#123; useLocation, useModel, Location &#125; <span class="keyword">from</span> <span class="string">'umi'</span>;  </span><br><span class="line"><span class="keyword">const</span> &#123; query &#125; = useLocation() <span class="keyword">as</span> Location; <span class="comment">// Location 中声明了query</span></span><br><span class="line"><span class="keyword">const</span> &#123; query &#125; = useLocation() <span class="keyword">as</span> Location | &#123;query: IQuery&#125;; <span class="comment">// 增强query声明</span></span><br></pre></td></tr></table></figure>
 
+<h4 id="当确定原先可能为undefined的属性现在是必定有值时如何声明"><a href="#当确定原先可能为undefined的属性现在是必定有值时如何声明" class="headerlink" title="当确定原先可能为undefined的属性现在是必定有值时如何声明"></a>当确定原先可能为<code>undefined</code>的属性现在是必定有值时如何声明</h4><figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">interface</span> IState &#123;</span><br><span class="line">  goods?: &#123;inventory: <span class="built_in">number</span>;&#125;,</span><br><span class="line">  address?: &#123;name: <span class="built_in">string</span>&#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * goods在跳转到当前页面时必定会被填充</span></span><br><span class="line"><span class="comment"> * 声明 goods 在当前页面时必定存在</span></span><br><span class="line"><span class="comment"> * 为避免后续不停使用 "?." 和 "goods?.inventory as number" 这样的断言</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> &#123;  goods &#125; = state <span class="keyword">as</span> Required&lt;<span class="keyword">typeof</span> state&gt;;</span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * address 在当前页面可能不存在</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">const</span> &#123; address &#125; = state;</span><br></pre></td></tr></table></figure>
+
+<h4 id="api-声明维护"><a href="#api-声明维护" class="headerlink" title="api 声明维护"></a><code>api</code> 声明维护</h4><p>大部分 <code>api</code> 是仅在一个页面中使用的，少数的<code>api</code> 才是公用的，因此有两种方式。个人趋向按组件使用的方式，但容易造成重复。具体的还需要看 <code>api</code> 的风格以及团队的风格。</p>
+<ol>
+<li>像组件一样逐步上升，仅页面用的在页面目录下创建<code>api.ts</code>文件，公共的放入<code>services/api.ts</code>中<ul>
+<li>方便维护，页面作废了直接删除</li>
+<li>每次新增 <code>api</code> 时需查询该 <code>api</code> 是否已经存在，如果是则抽取到公共文件中</li>
+</ul>
+</li>
+<li>全部放在公共文件目录中维护<ul>
+<li>按业务领域划分目录，但不同员工水平不同，起名字可能乱七八糟。</li>
+<li>按页面名称划分文件，与页面同名比较简单。</li>
+</ul>
+</li>
+</ol>
 
       
     </div>
@@ -516,7 +531,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#umi-中-useLocation-结果中没有-query-以及定义-query-内部字段声明"><span class="nav-number">1.</span> <span class="nav-text">umi 中  useLocation() 结果中没有 query, 以及定义 query 内部字段声明</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#umi-中-useLocation-结果中没有-query-以及定义-query-内部字段声明"><span class="nav-number">1.</span> <span class="nav-text">umi 中  useLocation() 结果中没有 query, 以及定义 query 内部字段声明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#当确定原先可能为undefined的属性现在是必定有值时如何声明"><span class="nav-number">2.</span> <span class="nav-text">当确定原先可能为undefined的属性现在是必定有值时如何声明</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#api-声明维护"><span class="nav-number">3.</span> <span class="nav-text">api 声明维护</span></a></li></ol></div>
             
 
           </div>
