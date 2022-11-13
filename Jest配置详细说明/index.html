@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="jest," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="jest 配置 默认配置获取与定制 12345678import type &amp;#123; Config &amp;#125; from &#39;jest&#39;;import &amp;#123; defaults &amp;#125; from &#39;jest-config&#39;;const config: Config &#x3D; &amp;#123;  moduleFileExtensions: [defaults.moduleFileExtensi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jest配置详细说明">
+<meta property="og:url" content="github.tedming.com/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="jest 配置 默认配置获取与定制 12345678import type &amp;#123; Config &amp;#125; from &#39;jest&#39;;import &amp;#123; defaults &amp;#125; from &#39;jest-config&#39;;const config: Config &#x3D; &amp;#123;  moduleFileExtensions: [defaults.moduleFileExtensi">
+<meta property="og:image" content="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/image-20221113234646821.png">
+<meta property="article:published_time" content="2022-11-13T15:43:39.000Z">
+<meta property="article:modified_time" content="2022-11-13T15:47:52.005Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="jest">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/image-20221113234646821.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/Jest配置详细说明/"/>
+
+
+
+
+
+  <title>Jest配置详细说明 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jest配置详细说明</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-13T23:43:39+08:00">
+                2022-11-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">单元测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="jest-配置"><a href="#jest-配置" class="headerlink" title="jest 配置"></a>jest 配置</h3><ol>
+<li><p>默认配置获取与定制</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="keyword">type</span> &#123; Config &#125; <span class="keyword">from</span> <span class="string">'jest'</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; defaults &#125; <span class="keyword">from</span> <span class="string">'jest-config'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> config: Config = &#123;</span><br><span class="line">  moduleFileExtensions: [defaults.moduleFileExtensions, <span class="string">'mts'</span>],</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="keyword">default</span> config;</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置项说明</p>
+</li>
+<li><table>
+<thead>
+<tr>
+<th>配置</th>
+<th>说明</th>
+<th>默认值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>automock</code></td>
+<td>1. 将模块导出的对象（包含default）的函数属性，以及模块导出的函数 <code>mock</code> 为<code>jest.fn</code>。而不管其导入方式为何种方式。<br>2. <code>__mocks__</code> 文件夹的会自动被mock，与此属性无关<br>3. <code>nodejs</code> 核心模块不受这个属性影响，需要显式mock, <code>jest.mock(&#39;fs&#39;)</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>bail</code></td>
+<td>出现<code>n</code>次失败后停止运行测试，0表示不限制。<br>但是测试用例可能是并行运行的，如果单元测试量很少的话，并不能看出来这个配置的作用</td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><code>cacheDirectory</code></td>
+<td>自定义指定临时缓存信息文件位置</td>
+<td><code>/tmp/&lt;path&gt;</code></td>
+</tr>
+<tr>
+<td><code>clearMocks</code></td>
+<td>1. 等同于 在每个测试文件的 <code>beforeEach</code> 中调用 <code>jest.clearAllMocks()</code><br>2.  清除所有的 mock.calls<code>,</code>mock.instances<code>,</code>mock.contexts<code>,</code> <code>mock.results</code> 等信息。<br>3. 但是函数的<code>implementation</code>被更改后不会被重置, <code>mockReturnValue</code> 也是更改了<code>implementation</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>collectCoverage</code></td>
+<td>1. 代码覆盖率收集，会显著降低测试速度<br>2. 从<code>babel (default) 或 v8</code> 获取覆盖率数据，<code>coverageProvider</code> 配置指定数据提供商<br> 3. 可以使用/* istanbul ignore next <em>/<code>或</code>/</em> c8 ignore next <em>/ 注释将代码排除<br><br>4. 方法中应该这样注释才会生效 `  isAuthorized: /</em> istanbul ignore next */ secret =&gt; secret === ‘wizard’`</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>collectCoverageFrom</code></td>
+<td>1. 仅作用于目前被执行的<strong>测试文件</strong>，如被<code>testPathIgnorePatterns</code>忽略的测试文件不会被匹配到。 使用<a href="https://github.com/micromatch/micromatch" target="_blank" rel="noopener">glob patterns</a> 来制定哪些测试文件参与覆盖率检测。<br>2. 优先级按数组顺序由低到高，如<code>[&quot;!**/__tests__/**&quot;, &quot;**/*.js&quot;]</code> 将不会排除 <code>__tests__</code> 目录，因为前面的规则被后面的规则覆盖了，要排除需要调换规则顺序<br>3. 默认按执行的代码依赖涉及的文件来计算覆盖率，指定规则后则按照规则匹配的所有文件来计算覆盖率<br>4. 测试发现无法包含<code>node_modules</code>目录，即使设置<code>coveragePathIgnorePatterns</code> 移除 <code>node_modules</code> 也无效（仅作用于被执行的<em>测试文件</em>）</td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>coverageDirectory</code></td>
+<td>1. 覆盖率测试结果输出文件目录<br>2. 测试后发现默认生成地址为项目根路径下的<code>coverage</code> 目录</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>coveragePathIgnorePatterns</code></td>
+<td>使用<code>regexp pattern</code>来排除哪些代码参与覆盖率检测<br></td>
+<td>[“/node_modules/“]</td>
+</tr>
+<tr>
+<td><code>coverageProvider</code></td>
+<td>指定覆盖率数据采集来源</td>
+<td><code>babel</code></td>
+</tr>
+<tr>
+<td><code>coverageReporters</code></td>
+<td>生成的覆盖率报告格式，以及选项设置。参考：<code>CoverageReporterWithOptions</code></td>
+<td>[“clover”, “json”, “lcov”, “text”]</td>
+</tr>
+<tr>
+<td><code>coverageThreshold</code></td>
+<td>1. 覆盖率达标最低阀值设置，当达不到时测试会提示失败<br>2. 可以全局设置，同时也可以指定目录设置复合的阀值，指定目录阀值仅关注该目录中的数据，全局设置取全局统计数据</td>
+<td></td>
+</tr>
+<tr>
+<td><code>dependencyExtractor</code></td>
+<td>指定自定义的模块依赖提取器文件的路径。</td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>displayName</code></td>
+<td>1. 指定项目名称，该名称会显示在测试结果日志之前<br>2. 对<code>monorepo</code>这样的多项目有用，便于区别不同项目的日志</td>
+<td><code>undefined</code></td>
+</tr>
+<tr>
+<td><code>errorOnDeprecated</code></td>
+<td>当使用以作废API时，提示错误信息</td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>extensionsToTreatAsEsm</code></td>
+<td>1. 将声明的文件后缀的文件视为<code>ES Moudle</code>文件<br>2.   案例：<code>{ extensionsToTreatAsEsm: [&#39;.uuu&#39;], transform: {    &quot;\\.uuu?$&quot;: &quot;babel-jest&quot; }}</code>，有可能需要<code>transform</code>属性配合</td>
+<td><code>[]</code></td>
+</tr>
+<tr>
+<td><code>fakeTimers</code></td>
+<td>1. 对所有测试提供默认的设置<br>2. 在文件中调用<code>jest.useFakeTimers();</code> 后启用或覆盖这些设置<br>3. 配置项参考：<code>type ModernFakeTimersConfig</code>，启用 <code>legacyFakeTimers</code> 选项后仅<code>enableGlobally</code> 选项有效</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><code>forceCoverageMatch</code></td>
+<td><code>glob pattern</code> 强制将指定目录的测试文件纳入覆盖率计算。</td>
+<td>[‘’]</td>
+</tr>
+<tr>
+<td><code>globals</code></td>
+<td>1. 设置全局变量，可用于同步项目中真实的全局变量<br>2. 注意：如果全局变量的值是<code>undefined</code>则相当于没有声明该变量，其它地方使用会有报错。</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><code>globalSetup</code></td>
+<td>1. 指定模块，在所有的测试套件之前执行一次。<br>3. 可用于声明全局变量，但变量只能在<code>globalTeardown</code> 中被读取，而非测试套件中读取<br>4.不能用于向沙箱测试套件/文件注入上下文/全局变量。请改用<a href="https://facebook.github.io/jest/docs/en/tutorial-react-native.html#setupfiles" target="_blank" rel="noopener"><code>setupFiles</code></a>/<a href="https://facebook.github.io/jest/docs/en/configuration.html#setuptestframeworkscriptfile-string" target="_blank" rel="noopener"><code>setupTestFrameworkScriptFile</code></a>。<br>5. 使用场景参考：开启/关闭数据库等外部环境。</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>globalTeardown</code></td>
+<td>1. 指定模块，在所有的测试套件之后执行一次。<br>2.  能获取到<code>globalSetup</code> 中定义的变量。</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>haste</code></td>
+<td>jest-haste-map插件的相关配置，用于获取项目中的所有文件以及它们之间的依赖关系，它通过查看 <code>import/require</code> 调用来实现这一点。（<strong>在第一次启动时遍历整个项目，把文件存储成 Map 的形式， 之后文件做了改动，那么只需增量地修改这个 Map 就可以了。</strong> 他们把这个工具命名为 <strong>Haste Map**</strong>。这种思路不仅可以用于热更新场景，还能应用在所有监听文件改动的场景，其中一种就是 <code>npx jest --watch</code> 这个场景。**）</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>injectGlobals</code></td>
+<td>1. 将 (<code>expect</code>, <code>test</code>, <code>describe</code>, <code>beforeEach</code> 等.)插入全局环境，而不用每个文件使用<code>import</code> 去引入<br>2. <code>test runner</code> 指定的是 <code>jest-circus</code> （默认）的才支持</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td><code>maxConcurrency</code></td>
+<td>最大并发运行测试的数量</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>maxWorkers</code></td>
+<td>1. <code>worker-pool</code>池的最大数量，一般默认的就够用了<br>2. 可设置百分比<code>maxWorkers: &#39;50%&#39;</code></td>
+<td>根据硬件/场景计算</td>
+</tr>
+<tr>
+<td><code>moduleDirectories</code></td>
+<td>模块递归查找目录</td>
+<td>[“node_modules”]</td>
+</tr>
+<tr>
+<td><code>moduleFileExtensions</code></td>
+<td>1. 模块文件扩展名<br>2. 查找顺序从左到右，如果在<code>TS</code> 项目中，应该调整<code>ts tsx</code> 到前面</td>
+<td>[“js”, “mjs”, “cjs”, “jsx”, “ts”, “tsx”, “json”, “node”]</td>
+</tr>
+<tr>
+<td><code>moduleNameMapper</code></td>
+<td>1. 文件别名匹配，最好于脚手架系统别名保持一致<br>2. 也可以用于指向测试桩<code>stub</code></td>
+<td>null</td>
+</tr>
+<tr>
+<td><code>modulePathIgnorePatterns</code></td>
+<td>模块路径排除，但是依赖的路径是没法排除的，所以这里是排除作为测试的入口的文件（如<code>testMath</code> 匹配到的文件的基础上再过滤）</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>modulePaths</code></td>
+<td>设置替代默认的<code>NODE_PATH</code> ，是解析模块时要搜索模块文件的绝对路径数组</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>notify</code></td>
+<td>1. 测试结果激活本机操作系统通知<br>2. 需要安装库<code>node-notifier</code></td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>notifyMode</code></td>
+<td>指定通知模式, 需要<code>notify: true</code></td>
+<td>failure-change</td>
+</tr>
+<tr>
+<td><code>preset</code></td>
+<td>1. 指定 Jest 配置基础的预设文件的地址， 如可以指定为<code>ts-jest</code><br>2. 不指定，在根路径下含有jest-preset.json<code>,</code>jest-preset.js<code>,</code>jest-preset.cjs<code>or</code>jest-preset.mjs 文件一样生效。</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>prettierPath</code></td>
+<td>inline snapshots 美化库指定</td>
+<td><code>prettier</code></td>
+</tr>
+<tr>
+<td><code>projects</code></td>
+<td>1. monorepos 中同时运行多个子项目的测试，可以设置<code>displayName</code>，不同子项目配置不同 <code>test runner</code> 等</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>reporters</code></td>
+<td>配置或添加其他测试报告，或增加自定义报告</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>resetMocks</code></td>
+<td>1. 等同于在每次<code>test</code> 之前调用<code>jest.resetAllMocks()</code>,  相当于打回<code>jest.fn()</code>状态，连初始<code>implementation</code>都被清除了。</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>resetModules</code></td>
+<td>1. 等同于文件中的每次<code>test</code> 之前都重置模块引入注册，模块代码会重新执行一次。確保import/require 的module 是初始未被污染的狀況.等同调用<code>jest.resetModules()</code><br>2. 测试发现对顶部引入无效对test内动态引入有效，测试的每个文件都是独立的进程，同一个文件才共享模块引入注册信息<br>3. 虽然是重新引入，但是不能改变被mock，因为模块的mock会被提升到引入之前。</td>
+<td>false</td>
+</tr>
+<tr>
+<td><code>resolver</code></td>
+<td>1. 自定义”文件模块解析”配置<code>ResolverOptions</code><br>2. 如同步使用项目根目录下的<code>tsconfig.json</code>中的<code>paths</code>配置</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>restoreMocks</code></td>
+<td>如同在每个<code>test</code>之前执行<code>jest.restoreAllMocks()</code>，相当于打回<code>jest.fn()</code>状态，但是保留初始<code>implementation</code></td>
+<td><code>false</code></td>
+</tr>
+<tr>
+<td><code>rootDir</code></td>
+<td>1. 自定义<code>rootDir</code>地址，影响占位符’<rootDir>‘的取值<br>2. 影响测试用例文件，<code>test</code> 只测试<code>rootDir</code>中的测试文件，因为<code>roots:[&quot;&lt;rootDir&gt;&quot;]</code><br>3. 不影响<code>jest</code> 查找<code>jest.config.ts</code>，相当于先找到配置文件，然后再根据参数修改了<code>rootDir</code>，进而影响了后续的测试范围，以及<code>&lt;rootDir&gt;</code>占位符的取值</rootDir></td>
+<td>配置文件位置&gt;package.json位置&gt;pwd位置（文件查找会向上查找）</td>
+</tr>
+<tr>
+<td><code>roots</code></td>
+<td>1. 指定测试文件查找路径的目录列表<br>2. 例如可用于限制测试文件范围 <code>roots: [&quot;&lt;rootDir&gt;/src/&quot;, &quot;&lt;rootDir&gt;/tests/&quot;]</code>.</td>
+<td>[“<rootDir>“]</rootDir></td>
+</tr>
+<tr>
+<td><code>runner</code></td>
+<td>指定 <code>runner</code></td>
+<td>“jest-runner”</td>
+</tr>
+<tr>
+<td><code>sandboxInjectedGlobals</code></td>
+<td>1. 性能：Test files run inside a <a href="https://nodejs.org/api/vm.html" target="_blank" rel="noopener">vm</a>, which slows calls to global context properties <br>2. 将常用全局变量插入，如：<code>Math</code>，以提升查找速度<br>3. 为何一开始不inject, 影响了什么？</td>
+<td></td>
+</tr>
+<tr>
+<td><code>setupFiles</code></td>
+<td>1. 指定模块路径，导出同步或异步函数<br>2. 每个测试文件执行前运行一次，在测试环境安装之后如<code>jsdom</code>,测试框架之前如<code>jest</code>执行一次<br>3. 可以添加 <strong>测试环境</strong> 的补充，比如 Mock 全局变量 <code>abcd</code> 等</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>setupFilesAfterEnv</code></td>
+<td>1. 指定模块路径，导出同步或异步函数<br>2. 在<strong>安装测试框架之后</strong>，在每个测试文件执行前运行一次。<br>3. 例如可以在其中编写每个测试都重复使用的<code>afterEach</code><br>4. 可以引入和配置 <strong>Jest/Jasmine（Jest 内部使用了 Jasmine）</strong> 插件。</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>slowTestThreshold</code></td>
+<td>设置阀值，运行多少秒的测试被视为是<em>慢测试</em>，单位秒</td>
+<td>5</td>
+</tr>
+<tr>
+<td><code>snapshotFormat</code></td>
+<td>快照格式化配置</td>
+<td>{escapeString: false, printBasicPrototype: false}</td>
+</tr>
+<tr>
+<td><code>snapshotResolver</code></td>
+<td>自定义快照存取路径解析器</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>snapshotSerializers</code></td>
+<td>自定义快照序列化工具</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>testEnvironment</code></td>
+<td>指定当前测试环境，或自定义测试环境CustomEnvironment</td>
+<td>“node”</td>
+</tr>
+<tr>
+<td><code>testEnvironmentOptions</code></td>
+<td>指定环境参数，如：<code>jsdom</code> 可设置初始<code>url</code>。具体的要看环境</td>
+<td>{}</td>
+</tr>
+<tr>
+<td><code>testFailureExitCode</code></td>
+<td>jest 报错退出代码</td>
+<td>1</td>
+</tr>
+<tr>
+<td><code>testMatch</code></td>
+<td>测试文件查找路径 <code>glob pattern</code>,基于roots上的进一步匹配，要注意匹配，以免将普通文件当作测试文件</td>
+<td>默认查找rootDir下的所有测试文件</td>
+</tr>
+<tr>
+<td><code>testPathIgnorePatterns</code></td>
+<td>测试文件忽略路径，基于roots， testRegex, testMatch上的进一步过滤</td>
+<td>[“/node_modules/“]</td>
+</tr>
+<tr>
+<td><code>testRegex</code></td>
+<td>测试文件查找路径 <code>regex pattern</code>, 基于roots上的进一步匹配，要注意匹配，以免将普通文件当作测试文件</td>
+<td>默认查找rootDir下的所有测试文件</td>
+</tr>
+<tr>
+<td><code>testResultsProcessor</code></td>
+<td>自定义测试结果格式</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>testRunner</code></td>
+<td>自定义测试<code>runner</code></td>
+<td>jest-circus/runner</td>
+</tr>
+<tr>
+<td><code>testSequencer</code></td>
+<td>自定义测试<code>sequencer</code>，测试排序</td>
+<td>@jest/test-sequencer</td>
+</tr>
+<tr>
+<td><code>testTimeout</code></td>
+<td>测试超时设置，单位毫秒</td>
+<td>5000</td>
+</tr>
+<tr>
+<td><code>transform</code></td>
+<td>指定文件编译器，并能给编译器指定参数</td>
+<td>{“\.[jt]sx?$”: “babel-jest”}</td>
+</tr>
+<tr>
+<td><code>transformIgnorePatterns</code></td>
+<td>1. 指定文件编译器忽略的文件或目录<br>2. 还能通过正则排除目录中的某些文件`/node_modules/(?!(foo</td>
+<td>bar))<code>, 忽略</code>node_module<code>文件，但是不忽略其中的</code>foo<code></code>bar` 目录</td>
+</tr>
+<tr>
+<td><code>unmockedModulePathPatterns</code></td>
+<td>当启用自动mock时，指定哪些模块不被mock。此时如果还想mock这些模块则需要显式操作</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>verbose</code></td>
+<td>测试运行期间是否打印冗长的报告</td>
+<td><code>false</code> or <code>true</code> if there is only one test file to run</td>
+</tr>
+<tr>
+<td><code>watchPathIgnorePatterns</code></td>
+<td><code>watch</code>期间忽略哪些文件的改动</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>watchPlugins</code></td>
+<td>自定义<code>watcher</code>插件</td>
+<td>[]</td>
+</tr>
+<tr>
+<td><code>watchman</code></td>
+<td>使用<code>watchman</code> 爬虫抓取文件。</td>
+<td>true</td>
+</tr>
+<tr>
+<td><code>workerIdleMemoryLimit</code></td>
+<td>指定<code>worker</code>的内存限制</td>
+<td>undefined</td>
+</tr>
+<tr>
+<td><code>//</code></td>
+<td><code>package.json</code> 中的<code>jest</code> 的注释属性，将会被忽略</td>
+<td></td>
+</tr>
+</tbody></table>
+<p>常用配置图解</p>
+</li>
+</ol>
+<p><img src="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/image-20221113234646821.png" alt="image-20221113234646821"></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jest/" rel="tag"># jest</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/IOS%E6%9C%BA%E5%9E%8B%E5%88%86%E8%BE%A8%E7%8E%87%E8%A1%A8/" rel="next" title="IOS机型分辨率表">
+                <i class="fa fa-chevron-left"></i> IOS机型分辨率表
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">80</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#jest-配置"><span class="nav-number">1.</span> <span class="nav-text">jest 配置</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
