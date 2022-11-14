@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next muse use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css" />
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="jest," />
+
+
+
+
+
+
+
+
+
+
+<meta name="description" content="学习参考 React Testing Library 作者 Kent C. Dodds 的 博客 Jest实践指南 Jest入门学习资料  Jest 的自定义实现思路参考 利用V8虚拟机，设计上测试引擎跑在 node 全局作用域下，而测试文件的代码则跑在 node 环境里的虚拟机局部作用域中，并且给虚拟机注入 test、expect 和 jest 等函数即可。  测试的难点： 不会配置。 Jest">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Jest配置详细说明">
+<meta property="og:url" content="github.tedming.com/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="Ted的探索之旅">
+<meta property="og:description" content="学习参考 React Testing Library 作者 Kent C. Dodds 的 博客 Jest实践指南 Jest入门学习资料  Jest 的自定义实现思路参考 利用V8虚拟机，设计上测试引擎跑在 node 全局作用域下，而测试文件的代码则跑在 node 环境里的虚拟机局部作用域中，并且给虚拟机注入 test、expect 和 jest 等函数即可。  测试的难点： 不会配置。 Jest">
+<meta property="og:image" content="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/image-20221021113630542.png">
+<meta property="og:image" content="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/image-20221021113642878-8393634.png">
+<meta property="article:published_time" content="2022-11-14T02:43:39.000Z">
+<meta property="article:modified_time" content="2022-11-14T02:42:56.993Z">
+<meta property="article:author" content="Ted">
+<meta property="article:tag" content="jest">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/image-20221021113630542.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Muse',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="github.tedming.com/Jest实践指南学习总结/"/>
+
+
+
+
+
+  <title>Jest配置详细说明 | Ted的探索之旅</title>
+  
+
+
+
+
+
+
+
+
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Ted的探索之旅</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="github.tedming.com/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Ted">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ted的探索之旅">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Jest配置详细说明</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2022-11-14T10:43:39+08:00">
+                2022-11-14
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%8D%95%E5%85%83%E6%B5%8B%E8%AF%95/" itemprop="url" rel="index">
+                    <span itemprop="name">单元测试</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h3 id="学习参考"><a href="#学习参考" class="headerlink" title="学习参考"></a>学习参考</h3><ul>
+<li>React Testing Library 作者 Kent C. Dodds 的 <a href="https://kentcdodds.com/" target="_blank" rel="noopener">博客</a></li>
+<li><a href="http://github.yanhaixiang.com/jest-tutorial/#%E6%B5%8B%E8%AF%95%E9%9A%BE%E7%82%B9" target="_blank" rel="noopener">Jest实践指南 Jest入门学习资料</a></li>
+</ul>
+<h3 id="Jest-的自定义实现思路参考"><a href="#Jest-的自定义实现思路参考" class="headerlink" title="Jest 的自定义实现思路参考"></a>Jest 的自定义实现思路参考</h3><ul>
+<li>利用<code>V8</code>虚拟机，设计上测试引擎跑在 node 全局作用域下，而测试文件的代码则跑在 node 环境里的虚拟机局部作用域中，并且给虚拟机注入 <code>test</code>、<code>expect</code> 和 <code>jest</code> 等函数即可。</li>
+</ul>
+<h3 id="测试的难点："><a href="#测试的难点：" class="headerlink" title="测试的难点："></a>测试的难点：</h3><ul>
+<li><strong>不会配置。</strong> Jest 的上手文档非常简单，甚至不需要配置。但真实情况是只要一个配置没配好，所有测试都跑不起来。测试不像开发，代码有问题可以慢慢调。 测试是一个 0 - 1 游戏，不是成功就是失败，挫败感非常强。</li>
+<li><strong>不知道要怎么 Mock。</strong> 这个绝对是经典中的经典。虽然官方文档有教程，但是真实的业务往往不是那么理想，远比文档要复杂的多。</li>
+<li><strong>不会构造测试用例。</strong> 刚接触测试时，很容易把做业务那套 “实现 XXX 功能” 的想法代入测试。但测试的重点不在于实现功能，而是构造用例。</li>
+<li><strong>没有测试策略。</strong> 上面是 “技” 的难点，测试还有 “术” 的难点。闷着头一通肝测试代码并不高效，使用合适的测试策略远比写 10 个测试用例重要。</li>
+<li>常见问题：<ul>
+<li>测试框架与开发框架的不匹配。比如版本冲突问题</li>
+<li>模拟环境问题。比如模拟浏览器环境，往往项目一出现localStorage, cookie 这些浏览器独有的东西时，<code>Jest</code>就会报错。</li>
+<li>不同框架、库的测试方法需要学习。如<code>react</code> 的 <code>react-testing-library</code>。</li>
+<li></li>
+</ul>
+</li>
+</ul>
+<h3 id="单元测试mock-的优势"><a href="#单元测试mock-的优势" class="headerlink" title="单元测试mock 的优势"></a>单元测试<code>mock</code> 的优势</h3><p><img src="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/image-20221021113630542.png" alt="image-20221021113630542"></p>
+<p><img src="/Jest%E5%AE%9E%E8%B7%B5%E6%8C%87%E5%8D%97%E5%AD%A6%E4%B9%A0%E6%80%BB%E7%BB%93/image-20221021113642878-8393634.png" alt="image-20221021113642878"></p>
+<h3 id="特殊说明"><a href="#特殊说明" class="headerlink" title="特殊说明"></a>特殊说明</h3><p>如果不是绝对路径，如：相对路径或字符串文件名，则表示该目录路径是相对于根路径<code>&lt;rootDir&gt;</code>的（默认为jest命令执行的根路径，可以配置修改）。<code>&lt;rootDir&gt;</code> 可以以占位符的方式出现在字符串中，这是不是表示它跟jest执行根路径是有区别的？</p>
+<ul>
+<li><code>jest --config test/jest.config.ts</code> 后需要在配置中执行’rootDir’，否则此时的根路径<code>&lt;rootDir&gt;</code>为test目录。</li>
+<li>rootDir: The root of the directory containing your Jest <a href="https://jestjs.io/docs/configuration#" target="_blank" rel="noopener">config file</a> <em>or</em> the <code>package.json</code> <em>or</em> the <a href="http://en.wikipedia.org/wiki/Pwd" target="_blank" rel="noopener"><code>pwd</code></a> if no <code>package.json</code> is found。j est会向上查找配置文件或package.json文件。<code>pwd</code> 当前命令执行的目录位置。<ul>
+<li><code>jest --config test/config.ts  --rootDir .</code> 命令行输入的相对地址的根路径是相对于当前的pwd，而非<code>test/config.ts</code>中的<code>test/</code>。而<code>test/config.ts. 中的</code>rootDir<code>属性的配置的相对地址的根路径则是</code>test/<code>，需要配置成</code>  <code>rootDir: &#39;..&#39;</code>。两者的区别需要注意。</li>
+</ul>
+</li>
+</ul>
+<p><code>regexp pattern</code> 和 <code>global pattern</code> 是两种匹配模式</p>
+<h4 id="单元测试技巧"><a href="#单元测试技巧" class="headerlink" title="单元测试技巧"></a>单元测试技巧</h4><ol>
+<li><p><code>Babel</code> 做转译的 缺点是无法让 <strong>Jest</strong> 在运行时做类型检查，所以更推荐大家使用 <code>ts-jest</code>，利用 tsc 来转译 TypeScript。</p>
+</li>
+<li><p>单文件测试：<code>yarn test &lt;文件的相对目录&gt;</code>。</p>
+</li>
+<li><p>使用<code>ts-jest</code> 的 <code>pathsToModuleNameMapper</code> 同步<code>tsconfig.json</code> 的 <code>paths</code> 别名到 <code>jest.config.js</code> 更简洁。</p>
+</li>
+<li><p>测试文件中<code>expect</code>如果在<code>setTimeout</code> 中需要使用<code>done()</code> 或使用<code>jest.useFakeTimers()</code>。</p>
+</li>
+<li><p><code>jest.spyOn(obj, methodName)</code> 默认的函数实现还是原来的函数实现。</p>
+</li>
+<li><p><code>jest.runAllTimers()</code> 执行的<code>setTimeout</code> 中如果同时存在<code>setTimeout（fn, 0）</code>和 <code>Promise.resolve().then(pFn)</code>时。理论上正确的执行顺序是<code>宏任务-&gt;微任务队列的所有任务(pFn)-&gt;下一个宏任务(fn)</code>。但是<code>jest.runAllTimers()</code>破环了这个顺序，嵌套的<code>setTimeout</code> 并没有被添加到<strong>宏任务</strong>队列，而是添加到其内部的<code>setTimeout</code>任务列表，并立即被取出执行了。</p>
+<ol>
+<li><code>test</code> 中存在<code>setTimeout</code> 等异步函数时，<code>console.log</code> 的内容没有输出，感觉代码没有被执行一样。真实的原因是代码其实被执行了，但是因为<code>test</code> 早就完成了，那么在完成之后执行的代码的信息就不会被收集，所以<code>console.log</code> 的信息没被大印，覆盖率也会因为检测不到该部分代码执行而下降。</li>
+</ol>
+</li>
+<li><p><code>await fn()</code> 实际上的实现原理是把后面的所有代码都包裹在 <code>then</code> 的回调里。</p>
+</li>
+<li><p>Jest 的快照可不仅仅能记录 DOM 结构，还能记录 <strong>一切能被序列化 的内容，比如纯文本、JSON、XML 等等。</strong></p>
+</li>
+<li><p><strong>业务代码并没有任何问题，测试却出错了，这就是测试中的 “假错误”</strong>这些因素造成的最终结果就是：<strong>不再信任快照测试。</strong> 所以，你也会发现市面上很多前端测试的总结以及文章都很少做 <strong>快照测试</strong>。很大原因是快照测试本身比较脆弱， 而且容易造成 “假错误”。</p>
+</li>
+<li><p>可以通过方法简化快照内容，如<code>@testing-library/react</code> 中的<code>getByText</code>，<strong>不要把无关的 DOM 也记录到快照里，这无法让人看懂</strong>。大段的快照很容易导致<strong>假错误</strong>，聚焦关键内容的快照更加合理。</p>
+</li>
+<li><p>我们要时刻谨记测试的最终目标： <strong>提升代码信心</strong> 。实现这个目标的关键要素是：<strong>避免测试代码实现细节，要像真实用户那样去使用业务代码</strong> 。这里说的用户一共分为两种：</p>
+<ol>
+<li><strong>普通用户。</strong> 也即使用网页的人</li>
+<li><strong>开发者。</strong> 接口使用者、数据消费者、API 调用侠</li>
+<li><strong>过度关注代码细节无形中会创造第三种用户：测试用户</strong>（刚接触测试的人很容易犯的一个错误就是：<strong>过度测试代码细节！</strong> ）</li>
+</ol>
+</li>
+<li><p><strong><code>jest.mock</code> 和 <code>jest.unmock</code> 是一对非常特殊的 API，它们会被提升到所有 <code>import</code> 前。也就是说，上面这段代码看起是先 import 再 mock，而真实情况是，先 mock 了，再 import</strong>。</p>
+</li>
+<li><p>使用<code>useLocation</code> 之前组件需要被<code>Router</code> 组件包裹。</p>
+</li>
+<li><p>一个文件中的测试用例（一个<code>test</code>就是一个测试用例）是否在<code>jest</code> 中并行运行？</p>
+<ol>
+<li>调试的时候发现是顺序执行的，但是这并不是一种好的做法，也许<code>jest（或者其他的底层测试运行器）</code>会在新的版本中以随机顺序运行测试用例</li>
+<li><code>--runInBand</code> <code>CLI</code> 标记防止并行运行测试用例（在当前进程中串行运行，而不是创建<code>worker pool</code> 子进程来运行测试用例）</li>
+</ol>
+</li>
+</ol>
+<h4 id="测试库"><a href="#测试库" class="headerlink" title="测试库"></a>测试库</h4><table>
+<thead>
+<tr>
+<th>库</th>
+<th>使用说明</th>
+<th></th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://github.com/mswjs/msw" target="_blank" rel="noopener">msw</a></td>
+<td>只对 Http 请求进行 Mock</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/jest-transform-stub" target="_blank" rel="noopener">jest-transform-stub</a></td>
+<td>转译非 JS 静态资源文件</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://testing-library.com/docs/react-testing-library/intro/" target="_blank" rel="noopener">React Testing Library</a></td>
+<td>测试 React 的测试库</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://www.npmjs.com/package/@testing-library/jest-dom" target="_blank" rel="noopener">@testing-library/jest-dom</a></td>
+<td>供了很多关于 DOM 的 Matcher API</td>
+<td></td>
+</tr>
+<tr>
+<td><a href="https://github.com/reduxjs/redux-mock-store" target="_blank" rel="noopener">redux-mock-store</a></td>
+<td>1. Redux 测试插件引入的中间件<code>thunk</code>为 <code>redux-thunk</code> 而非 <code>react-thunk</code><br>2. <code>AsyncThunkAction</code> 的测试方法： <code>const data = await fetchAsyncThunk()(store.dispatch, store.getState, {});</code></td>
+<td></td>
+</tr>
+<tr>
+<td><a href="@testing-library/react-hooks">@testing-library/react-hooks</a></td>
+<td>hooks单元测试库，渲染组件的方式为集成测试。</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody></table>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/jest/" rel="tag"># jest</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/Jest%E9%85%8D%E7%BD%AE%E8%AF%A6%E7%BB%86%E8%AF%B4%E6%98%8E/" rel="next" title="Jest配置详细说明">
+                <i class="fa fa-chevron-left"></i> Jest配置详细说明
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">Ted</p>
+              <p class="site-description motion-element" itemprop="description"></p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives">
+              
+                  <span class="site-state-item-count">81</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">69</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#学习参考"><span class="nav-number">1.</span> <span class="nav-text">学习参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Jest-的自定义实现思路参考"><span class="nav-number">2.</span> <span class="nav-text">Jest 的自定义实现思路参考</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试的难点："><span class="nav-number">3.</span> <span class="nav-text">测试的难点：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#单元测试mock-的优势"><span class="nav-number">4.</span> <span class="nav-text">单元测试mock 的优势</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特殊说明"><span class="nav-number">5.</span> <span class="nav-text">特殊说明</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#单元测试技巧"><span class="nav-number">5.1.</span> <span class="nav-text">单元测试技巧</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#测试库"><span class="nav-number">5.2.</span> <span class="nav-text">测试库</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ted</span>
+
+  
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" target="_blank" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+
+
+  <span class="post-meta-divider">|</span>
+
+
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+
+
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: 'xa1Cir1A4Ub5rIWCYW3WGFat-gzGzoHsz',
+        appKey: 'b9E5jLJOCcKWwyhnYBR0IBNw',
+        placeholder: 'Just go go',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
